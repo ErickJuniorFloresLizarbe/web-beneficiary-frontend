@@ -1,0 +1,15 @@
+/* Custom styles for workshop form component */
+.calendar-container {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.date-selected {
+    background-color: #9333ea;
+    color: white;
+}
+
+.date-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

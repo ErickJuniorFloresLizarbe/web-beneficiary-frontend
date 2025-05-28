@@ -1,0 +1,614 @@
+<div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-xl max-w-7xl w-full h-[90vh] flex">
+        <!-- Sidebar Navigation with scroll -->
+        <div class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col">
+            <div class="p-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold text-gray-800">{{ familyToEdit ? 'Editar' : 'Nueva' }} Familia</h2>
+                    <button (click)="closeForm()" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scrollable navigation menu -->
+            <nav class="flex-1 overflow-y-auto py-2 px-2">
+                <div class="space-y-1">
+                    <ng-container *ngFor="let section of sections; let i = index">
+                        <button (click)="currentSection = i"
+                            class="w-full flex items-center px-4 py-3 text-sm rounded-lg transition-colors duration-150"
+                            [class.bg-blue-500]="currentSection === i"
+                            [class.text-white]="currentSection === i"
+                            [class.bg-white]="currentSection !== i"
+                            [class.text-gray-700]="currentSection !== i"
+                            [class.hover:bg-blue-50]="currentSection !== i">
+                            <span class="inline-flex items-center justify-center w-8 h-8 text-lg mr-3">
+                                {{ section.icon }}
+                            </span>
+                            {{ section.title }}
+                        </button>
+                    </ng-container>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Form Content -->
+        <div class="flex-1 flex flex-col h-full">
+            <form #familyForm="ngForm" (ngSubmit)="onSubmit(familyForm)" class="flex-1 overflow-y-auto p-6">
+                <!-- Dynamic Section Content -->
+                <div [ngSwitch]="currentSection" class="space-y-6">
+
+                    <!-- Información Familiar -->
+                    <div *ngSwitchCase="0" class="animate-fadeIn">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Información Familiar 👨‍👩‍👧‍👦</h3>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Dirección</label>
+                                <input type="text"
+                                    class="form-input px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.direction"
+                                    name="direction"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Razón de Admisión</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.reasibAdmission"
+                                    name="reasibAdmission"
+                                    required>
+                                    <option value="" disabled selected>Seleccione una razón</option>
+                                    <option value="Situación económica">Situación económica</option>
+                                    <option value="Problemas de salud">Problemas de salud</option>
+                                    <option value="Situación familiar">Situación familiar</option>
+                                    <option value="Necesidad de apoyo">Necesidad de apoyo</option>
+                                    <option value="Reubicación familiar">Reubicación familiar</option>
+                                </select>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Servicios Básicos 🔧</h3>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Servicio de Agua</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.waterService"
+                                    name="waterService"
+                                    required>
+                                    <option value="" disabled selected>Seleccione una opcion</option>
+                                    <option value="Disponible">Disponible</option>
+                                    <option value="No Disponible">No Disponible</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Servicio de Drenaje</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.servDrain"
+                                    name="servDrain"
+                                    required>
+                                    <option value="" disabled selected>Seleccione una opcion</option>
+                                    <option value="Disponible">Disponible</option>
+                                    <option value="No Disponible">No Disponible</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Servicio de Luz</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.servLight"
+                                    name="servLight"
+                                    required>
+                                    <option value="" disabled selected>Seleccione una opcion</option>
+                                    <option value="Disponible">Disponible</option>
+                                    <option value="No Disponible">No Disponible</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Servicio de Cable</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.servCable"
+                                    name="servCable"
+                                    required>
+                                    <option value="" disabled selected>Seleccione una opcion</option>
+                                    <option value="Disponible">Disponible</option>
+                                    <option value="No Disponible">No Disponible</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Servicio de Gas</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.servGas"
+                                    name="servGas"
+                                    required>
+                                    <option value="" disabled selected>Seleccione una opcion</option>
+                                    <option value="Disponible">Disponible</option>
+                                    <option value="No Disponible">No Disponible</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Entorno Comunitario -->
+                    <div *ngSwitchCase="1" class="animate-fadeIn">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Entorno Comunitario 🏘️</h3>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Área</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.area"
+                                    name="area"
+                                    required>
+                                    <option value="" disabled selected>Seleccione un área</option>
+                                    <option value="Urbana">Urbana</option>
+                                    <option value="Rural">Rural</option>
+                                    <option value="Semi-urbana">Semi-urbana</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Ubicación de Referencia</label>
+                                <input type="text"
+                                    class="form-input px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.referenceLocation"
+                                    name="referenceLocation"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Residuo</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.residue"
+                                    name="residue"
+                                    required>
+                                    <option value="" disabled selected>Seleccione manejo de residuos</option>
+                                    <option value="Recolección">Recolección municipal</option>
+                                    <option value="Quema">Quema</option>
+                                    <option value="Entierro">Entierro</option>
+                                    <option value="Reciclaje">Reciclaje</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Iluminación Pública</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.publicLighting"
+                                    name="publicLighting"
+                                    required>
+                                    <option value="" disabled selected>Seleccione una opcion</option>
+                                    <option value="Disponible">Disponible</option>
+                                    <option value="No Disponible">No Disponible</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Seguridad</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.security"
+                                    name="security"
+                                    required>
+                                    <option value="" disabled selected>Seleccione nivel de seguridad</option>
+                                    <option value="Alta">Alta</option>
+                                    <option value="Media">Media</option>
+                                    <option value="Baja">Baja</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Composicion Familiar -->
+                    <div *ngSwitchCase="2" class="animate-fadeIn">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Composicion Familiar 👥</h3>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Número de Miembros</label>
+                                <input type="number"
+                                    class="form-input px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.numberMembers"
+                                    name="numberMembers"
+                                    min="1"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Número de Niños</label>
+                                <input type="number"
+                                    class="form-input px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.numberChildren"
+                                    name="numberChildren"
+                                    min="0"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Familia</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.familyType"
+                                    name="familyType"
+                                    required>
+                                    <option value="" disabled selected>Seleccione tipo de familia</option>
+                                    <option value="Nuclear">Nuclear</option>
+                                    <option value="Extendida">Extendida</option>
+                                    <option value="Monoparental">Monoparental</option>
+                                    <option value="Compuesta">Compuesta</option>
+                                    <option value="Reconstituida">Reconstituida</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Problemas Sociales</label>
+                                <input type="text"
+                                    class="form-input px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.socialProblems"
+                                    name="socialProblems"
+                                    required>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Alimentacion Familiar 🍽️</h3>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Frecuencia Semanal</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.weeklyFrequency"
+                                    name="weeklyFrequency"
+                                    required>
+                                    <option value="" disabled selected>Seleccione frecuencia</option>
+                                    <option value="1 vez por día">1 vez por día</option>
+                                    <option value="2 veces por día">2 veces por día</option>
+                                    <option value="3 veces por día">3 veces por día</option>
+                                    <option value="Irregular">Irregular</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Alimentacion</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.feedingType"
+                                    name="feedingType"
+                                    required>
+                                    <option value="" disabled selected>Seleccione tipo de alimentación</option>
+                                    <option value="Balanceada">Balanceada</option>
+                                    <option value="Alta en carbohidratos">Alta en carbohidratos</option>
+                                    <option value="Alta en grasas">Alta en grasas</option>
+                                    <option value="Baja en proteínas">Baja en proteínas</option>
+                                    <option value="Deficiente">Deficiente</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Salud Familiar -->
+                    <div *ngSwitchCase="3" class="animate-fadeIn">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Salud Familiar 🏥</h3>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Seguro</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.safeType"
+                                    name="safeType"
+                                    required>
+                                    <option value="" disabled selected>Seleccione tipo de seguro</option>
+                                    <option value="SIS">SIS</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Enfermedades Familiares</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.familyDisease"
+                                    name="familyDisease"
+                                    required>
+                                    <option value="" disabled selected>Seleccione tipo de enfermedades</option>
+                                    <option value="Ninguna">Ninguna</option>
+                                    <option value="Diabetes">Diabetes</option>
+                                    <option value="Hipertensión">Hipertensión</option>
+                                    <option value="Enfermedades cardíacas">Enfermedades cardíacas</option>
+                                    <option value="Cáncer">Cáncer</option>
+                                    <option value="Obesidad">Obesidad</option>
+                                    <option value="Respiratorias">Respiratorias</option>
+                                    <option value="Otras">Otras</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tratamiento</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.treatment"
+                                    name="treatment"
+                                    required>
+                                    <option value="" disabled selected>Seleccione tipo de tratamiento</option>
+                                    <option value="Ninguna">Ninguna</option>
+                                    <option value="Si">Si</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Antecedentes de Enfermedad</label>
+                                <input type="text"
+                                    class="form-input px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.diseaseHistory"
+                                    name="diseaseHistory"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Examen Médico</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.medicalExam"
+                                    name="medicalExam"
+                                    required>
+                                    <option value="" disabled selected>Seleccione frecuencia</option>
+                                    <option value="Mensual">Mensual</option>
+                                    <option value="Trimestral">Trimestral</option>
+                                    <option value="Semestral">Semestral</option>
+                                    <option value="Anual">Anual</option>
+                                    <option value="No realiza">No realiza</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Distribucion de la vivienda -->
+                    <div *ngSwitchCase="4" class="animate-fadeIn">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Distribucion de la Vivienda 🏠</h3>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Ambiente del Hogar</label>
+                                <input type="number"
+                                    class="form-input px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.housingDetails.homeEnvironment"
+                                    name="homeEnvironment"
+                                    min="0"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Número de Dormitorios</label>
+                                <input type="number"
+                                    class="form-input px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.housingDetails.bedroomNumber"
+                                    name="bedroomNumber"
+                                    min="0"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Habitabilidad</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.housingDetails.habitability"
+                                    name="habitability"
+                                    required>
+                                    <option value="" disabled selected>Seleccione habitabilidad</option>
+                                    <option value="Óptima">Óptima</option>
+                                    <option value="Adecuada">Adecuada</option>
+                                    <option value="Regular">Regular</option>
+                                    <option value="Deficiente">Deficiente</option>
+                                    <option value="Precaria">Precaria</option>
+                                </select>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Entorno de la Vivienda 🌳</h3>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tenencia</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.tenure"
+                                    name="tenure"
+                                    required>
+                                    <option value="" disabled selected>Seleccione tipo de tenencia</option>
+                                    <option value="Propia">Propia</option>
+                                    <option value="Alquilada">Alquilada</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Vivienda</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.housingDetails.typeOfHousing"
+                                    name="typeOfHousing"
+                                    required>
+                                    <option value="" disabled selected>Seleccione tipo de vivienda</option>
+                                    <option value="Departamento">Departamento</option>
+                                    <option value="Casa">Casa</option>
+                                    <option value="Condominio">Condominio</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Material de la Vivienda</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.housingDetails.housingMaterial"
+                                    name="housingMaterial"
+                                    required>
+                                    <option value="" disabled selected>Seleccione tipo de vivienda</option>
+                                    <option value="Ladrillo">Ladrillo</option>
+                                    <option value="Concreto">Concreto</option>
+                                    <option value="Madera">Madera</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Seguridad de la Vivienda</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.housingDetails.housingSecurity"
+                                    name="housingSecurity"
+                                    required>
+                                    <option value="" disabled selected>Seleccione nivel de seguridad</option>
+                                    <option value="Alta">Alta</option>
+                                    <option value="Media">Media</option>
+                                    <option value="Baja">Baja</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Autonomia Laboral -->
+                    <div *ngSwitchCase="5" class="animate-fadeIn">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Autonomia Laboral 💼</h3>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Numero de Habitaciones</label>
+                                <input type="number"
+                                    class="form-input px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.housingDetails.numberRooms"
+                                    name="numberRooms"
+                                    min="0"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Numero de Dormitorios</label>
+                                <input type="number"
+                                    class="form-input px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.housingDetails.numberOfBedrooms"
+                                    name="numberOfBedrooms"
+                                    min="0"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Habitalidad del Edificio</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.housingDetails.habitabilityBuilding"
+                                    name="habitabilityBuilding"
+                                    required>
+                                    <option value="" disabled selected>Seleccione habitabilidad</option>
+                                    <option value="Óptima">Óptima</option>
+                                    <option value="Regular">Regular</option>
+                                    <option value="Deficiente">Deficiente</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vida social -->
+                    <div *ngSwitchCase="6" class="animate-fadeIn">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Vida Social 🤝</h3>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Material</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.material"
+                                    name="material"
+                                    required>
+                                    <option value="" disabled selected>Seleccione tipo de material</option>
+                                    <option value="Ladrillo">Ladrillo</option>
+                                    <option value="Concreto">Concreto</option>
+                                    <option value="Madera">Madera</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Alimentacion</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.feeding"
+                                    name="feeding"
+                                    required>
+                                    <option value="" disabled selected>Seleccione tipo de alimentación</option>
+                                    <option value="Balanceado">Balanceado</option>
+                                    <option value="Saludable">Saludable</option>
+                                    <option value="Inadecuado">Inadecuado</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Economico</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.economic"
+                                    name="economic"
+                                    required>
+                                    <option value="" disabled selected>Seleccione tipo de economia actual</option>
+                                    <option value="Estable">Estable</option>
+                                    <option value="Inestable">Inestable</option>
+                                    <option value="Mejorando">Mejorando</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Espiritual</label>
+                                <select
+                                    class="form-select px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.spiritual"
+                                    name="spiritual"
+                                    required>
+                                    <option value="" disabled selected>Seleccione una opcion</option>
+                                    <option value="Activa">Activa</option>
+                                    <option value="Inactiva">Inactiva</option>
+                                    <option value="Pasiva">Pasiva</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Compañia Social</label>
+                                <input type="text"
+                                    class="form-input px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.socialCompany"
+                                    name="socialCompany"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Guia de Consejos</label>
+                                <input type="text"
+                                    class="form-input px-4 py-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+                                    [(ngModel)]="family.basicService.guideTip"
+                                    name="guideTip"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Navigation Buttons -->
+            <div class="border-t border-gray-200 p-4 bg-gray-50 flex justify-between items-center">
+                <button type="button"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
+                    [disabled]="currentSection === 0"
+                    (click)="previousSection()">
+                    Anterior
+                </button>
+
+                <div class="flex space-x-3">
+                    <button type="button"
+                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700"
+                        *ngIf="currentSection < sections.length - 1"
+                        (click)="nextSection()">
+                        Siguiente
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700"
+                        *ngIf="currentSection === sections.length - 1"
+                        (click)="familyForm.ngSubmit.emit()">
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

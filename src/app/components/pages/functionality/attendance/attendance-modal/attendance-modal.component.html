@@ -1,0 +1,53 @@
+<!-- Modal -->
+<div *ngIf="isModalOpen" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+  <div class="bg-white p-6 rounded-lg w-96 shadow-lg">
+    <h2 class="text-2xl font-bold mb-4">
+      {{ isEditMode ? 'Editar Asistencia' : 'Agregar Asistencia' }}
+    </h2>
+    <form (ngSubmit)="saveAttendance()">
+      <div class="mb-4">
+        <label class="block text-lg font-semibold" for="issueId">Tema</label>
+        <select class="border p-2 w-full rounded" id="issueId" [(ngModel)]="selectedIssueId" name="issueId"
+          required>
+          <option *ngFor="let issue of issueList" [value]="issue.id">{{ issue.name }} - {{ issue.sesion }}</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-lg font-semibold" for="personId">Persona</label>
+        <select class="border p-2 w-full rounded" id="personId" [(ngModel)]="selectedPersonId" name="personId"
+          required>
+          <!-- IMPORTANTE: Usamos idPerson en lugar de id -->
+          <option *ngFor="let person of personList" [value]="person.idPerson">
+            {{ person.name }}
+          </option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-lg font-semibold" for="entryTime">Hora de llegada</label>
+        <input class="border p-2 w-full rounded bg-gray-200 cursor-not-allowed" id="entryTime" name="entryTime"
+          [(ngModel)]="entryTime" type="datetime-local" readonly required>
+      </div>
+      <!-- Condición para mostrar "Justificación de Documento" solo si estamos en modo de edición -->
+      <div *ngIf="isEditMode" class="mb-4">
+        <label class="block text-lg font-semibold" for="justificationDocument">Documento de Justificación</label>
+
+        <!-- Campo de entrada para la carga de archivo (imagen) -->
+        <input class="border p-2 w-full rounded" id="justificationDocument" type="file" (change)="onFileChange($event)"
+          accept="image/*" />
+
+        <!-- Vista previa de la imagen cargada -->
+        <div *ngIf="previewImage" class="mt-2">
+          <img [src]="previewImage" alt="Vista previa de la imagen" class="w-full h-auto rounded-lg" />
+        </div>
+      </div>
+
+      <div class="flex justify-end">
+        <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+          (click)="closeModal()">Cancelar</button>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
+          {{ isEditMode ? 'Actualizar' : 'Agregar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

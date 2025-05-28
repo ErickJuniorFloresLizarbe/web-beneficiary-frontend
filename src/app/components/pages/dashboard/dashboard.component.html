@@ -1,0 +1,370 @@
+<div class="p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
+  <div class="max-w-7xl mx-auto">
+    <!-- Encabezado del Dashboard -->
+    <header class="mb-8 animate-fade-in">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-2">Sistema de Gestión NPH</h1>
+      <p class="text-gray-600 dark:text-gray-400">Panel de control centralizado para administración y seguimiento</p>
+    </header>
+
+    <!-- Acceso Rápido -->
+    <div class="mb-8 animate-fade-in">
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-zap">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+        </svg>
+        Acceso Rápido
+      </h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        <a *ngFor="let module of recentModules; let i = index" [routerLink]="[module.route]"
+          class="dashboard-card bg-primary-10 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in-up flex flex-col items-center p-4 text-center group border border-gray-100 dark:border-gray-700 hover:border-transparent dark:hover:border-transparent"
+          [style.animation-delay]="i * 0.1 + 's'">
+          <div [ngClass]="module.color"
+            class="p-3 rounded-full mb-3 transform transition-transform group-hover:scale-110 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              [ngClass]="'lucide lucide-' + module.icon" class="text-white">
+              <ng-container [ngSwitch]="module.icon">
+                <ng-container *ngSwitchCase="'home'">
+                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </ng-container>
+                <ng-container *ngSwitchCase="'user-plus'">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <line x1="19" x2="19" y1="8" y2="14" />
+                  <line x1="22" x2="16" y1="11" y2="11" />
+                </ng-container>
+                <ng-container *ngSwitchCase="'clipboard-check'">
+                  <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                  <path d="m9 14 2 2 4-4" />
+                </ng-container>
+                <ng-container *ngSwitchCase="'sparkles'">
+                  <path d="M12 3v5m4-2-1 4m-6-4 1 4m10 2-3 2m0-4 3 2m-12 0-3-2m0 4 3-2m4 8v-5" />
+                  <circle cx="12" cy="12" r="3" />
+                </ng-container>
+                <ng-container *ngSwitchCase="'file-text'">
+                  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" x2="8" y1="13" y2="13" />
+                  <line x1="16" x2="8" y1="17" y2="17" />
+                  <line x1="10" x2="8" y1="9" y2="9" />
+                </ng-container>
+              </ng-container>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-gray-800 dark:text-white">{{ module.title }}</h3>
+          <div [ngClass]="module.bgColor" class="mt-2 rounded-full px-2 py-1 text-xs font-medium"
+            [class]="module.textColor">
+            {{ module.count }} registros
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tarjetas de Módulos -->
+    <div class="mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-layout-grid">
+            <rect width="7" height="7" x="3" y="3" rx="1" />
+            <rect width="7" height="7" x="14" y="3" rx="1" />
+            <rect width="7" height="7" x="14" y="14" rx="1" />
+            <rect width="7" height="7" x="3" y="14" rx="1" />
+          </svg>
+          Módulos del Sistema
+        </h2>
+        <div
+          class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 bg-primary-10 dark:bg-gray-800 px-3 py-1.5 rounded-full shadow-sm">
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block w-2 h-2 rounded-full bg-green-500 opacity-75"></span>
+            Funcional
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block w-2 h-2 rounded-full bg-red-500 opacity-75"></span>
+            Inactivo
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block w-2 h-2 rounded-full bg-yellow-500 opacity-75 animate-pulse"></span>
+            Cargando
+          </span>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div *ngFor="let card of dashboardCards; let i = index"
+          class="dashboard-card bg-primary-10 dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300 animate-fade-in-up group"
+          [style.animation-delay]="i * 0.1 + 's'">
+          <div class="p-5 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <h2 class="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white">{{ card.title }}</h2>
+                <!-- Indicador de estado sutil -->
+                <span [class]="getStatusColor(card.status)" class="inline-block w-2 h-2 rounded-full opacity-75"
+                  [class.animate-pulse]="card.status === 'loading'" [title]="getStatusText(card.status)">
+                </span>
+              </div>
+              <div [ngClass]="'bg-gradient-to-r ' + card.color"
+                class="p-2.5 sm:p-3 rounded-lg shadow-sm transform transition-transform duration-300 group-hover:scale-110">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  [ngClass]="'lucide lucide-' + card.icon" class="text-white">
+                  <ng-container [ngSwitch]="card.icon">
+                    <ng-container *ngSwitchCase="'calendar-check'">
+                      <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                      <line x1="16" x2="16" y1="2" y2="6" />
+                      <line x1="8" x2="8" y1="2" y2="6" />
+                      <line x1="3" x2="21" y1="10" y2="10" />
+                      <path d="m9 16 2 2 4-4" />
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'file-text'">
+                      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="16" x2="8" y1="13" y2="13" />
+                      <line x1="16" x2="8" y1="17" y2="17" />
+                      <line x1="10" x2="8" y1="9" y2="9" />
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'user-plus'">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                      <circle cx="9" cy="7" r="4" />
+                      <line x1="19" x2="19" y1="8" y2="14" />
+                      <line x1="22" x2="16" y1="11" y2="11" />
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'home'">
+                      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                      <polyline points="9 22 9 12 15 12 15 22" />
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'target'">
+                      <circle cx="12" cy="12" r="10" />
+                      <circle cx="12" cy="12" r="6" />
+                      <circle cx="12" cy="12" r="2" />
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'hammer'">
+                      <path d="m15 12-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L12 9" />
+                      <path d="M17.64 15 22 10.64" />
+                      <path
+                        d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16.01 4.6a5.56 5.56 0 0 0-3.94-1.64H9l.92.82A6.18 6.18 0 0 1 12 8.4v1.56l2 2h2.47l2.26 1.91" />
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'sparkles'">
+                      <path d="M12 3v5m4-2-1 4m-6-4 1 4m10 2-3 2m0-4 3 2m-12 0-3-2m0 4 3-2m4 8v-5" />
+                      <circle cx="12" cy="12" r="3" />
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'clipboard-check'">
+                      <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+                      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                      <path d="m9 14 2 2 4-4" />
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'book-open'">
+                      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'calendar-clock'">
+                      <path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5" />
+                      <path d="M16 2v4" />
+                      <path d="M8 2v4" />
+                      <path d="M3 10h5" />
+                      <path d="M17.5 17.5 16 16.25V14" />
+                      <path d="M22 16a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z" />
+                    </ng-container>
+                  </ng-container>
+                </svg>
+              </div>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">{{ card.description }}</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{{ card.count }}</p>
+                <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Total registros</p>
+              </div>
+              <button [routerLink]="[card.route]" [ngClass]="card.bgColor"
+                class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-all duration-200 text-xs sm:text-sm font-medium flex items-center gap-1.5 hover:-translate-y-1 shadow-sm"
+                [class]="card.textColor">
+                <span>Ver detalles</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-arrow-right">
+                  <path d="M5 12h14" />
+                  <path d="m12 5 7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <!-- Indicador de progreso -->
+          <div class="h-1 w-full bg-gray-100 dark:bg-gray-700">
+            <div [ngClass]="'bg-gradient-to-r ' + card.color" [style.width]="getProgressWidth(card.count)"
+              class="h-full rounded-r transition-all duration-500 ease-in-out"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Historial de Actividades -->
+    <div
+      class="bg-primary-10 dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 sm:p-6 animate-fade-in mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-history">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+            <path d="M12 7v5l4 2" />
+          </svg>
+          Historial de Actividades
+        </h2>
+        <div class="flex gap-2">
+          <button (click)="toggleFilterMenu()"
+            class="p-1.5 rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-filter">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+          </button>
+          <button (click)="refreshHistory()"
+            class="p-1.5 rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-refresh-cw">
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+              <path d="M21 3v5h-5" />
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+              <path d="M3 21v-5h5" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="showFilterMenu"
+        class="absolute right-0 top-10 mt-2 w-48 bg-primary-10 dark:bg-gray-800 rounded-md shadow-lg z-20 border border-gray-200 dark:border-gray-700 animate-fade-in">
+        <div class="p-3">
+          <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Filtrar por módulo</h3>
+          <div class="space-y-2">
+            <div *ngFor="let module of getUniqueModules()" class="flex items-center">
+              <input type="checkbox" [id]="'filter-' + module" [checked]="isModuleSelected(module)"
+                (change)="toggleModuleFilter(module)"
+                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+              <label [for]="'filter-' + module" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                {{ module }}
+              </label>
+            </div>
+          </div>
+          <div class="mt-3 flex justify-between">
+            <button (click)="clearFilters()" class="text-xs text-gray-600 dark:text-gray-400 hover:underline">
+              Limpiar filtros
+            </button>
+            <button (click)="applyFilters()"
+              class="text-xs bg-indigo-600 text-white px-2 py-1 rounded hover:bg-indigo-700">
+              Aplicar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="overflow-hidden">
+        <div class="overflow-x-auto">
+          <div class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+            <div *ngFor="let activity of filteredHistory; let i = index"
+              class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg flex items-start gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
+              [style.animation-delay]="i * 0.05 + 's'">
+              <div class="flex items-start gap-3 w-full">
+                <div class="flex-shrink-0">
+                  <img [src]="activity.userAvatar" alt="User Avatar"
+                    class="w-10 h-10 rounded-full border-2 border-white dark:border-gray-700 shadow-sm group-hover:scale-105 transition-transform">
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                    <p class="text-sm font-medium text-gray-900 dark:text-white">{{ activity.userName }}</p>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ activity.timestamp
+                      }}</span>
+                  </div>
+                  <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">{{ activity.action }}</p>
+                  <div class="flex items-center gap-2 mt-2">
+                    <span [ngClass]="activity.bgColor" [class]="activity.textColor"
+                      class="px-2 py-0.5 rounded-full text-xs font-medium">{{ activity.module }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de Ayuda Rápida -->
+    <div
+      class="bg-primary-10 dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 sm:p-6 animate-fade-in mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-help-circle">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <path d="M12 17h.01" />
+          </svg>
+          Ayuda Rápida
+        </h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div
+          class="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800/30 hover:shadow-md transition-all duration-300 group">
+          <h3
+            class="font-semibold text-indigo-700 dark:text-indigo-300 mb-2 group-hover:translate-x-1 transition-transform">
+            Guías de Uso</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Accede a tutoriales y documentación sobre cómo
+            utilizar el sistema.</p>
+          <button
+            class="text-indigo-600 dark:text-indigo-400 text-sm font-medium flex items-center gap-1 hover:underline group-hover:gap-2 transition-all">
+            Ver guías
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-external-link">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" x2="21" y1="14" y2="3" />
+            </svg>
+          </button>
+        </div>
+        <div
+          class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-100 dark:border-emerald-800/30 hover:shadow-md transition-all duration-300 group">
+          <h3
+            class="font-semibold text-emerald-700 dark:text-emerald-300 mb-2 group-hover:translate-x-1 transition-transform">
+            Soporte Técnico</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">¿Problemas con el sistema? Contacta a nuestro equipo
+            de soporte.</p>
+          <button
+            class="text-emerald-600 dark:text-emerald-400 text-sm font-medium flex items-center gap-1 hover:underline group-hover:gap-2 transition-all">
+            Contactar soporte
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-message-square">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          </button>
+        </div>
+        <div
+          class="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-800/30 hover:shadow-md transition-all duration-300 group">
+          <h3
+            class="font-semibold text-amber-700 dark:text-amber-300 mb-2 group-hover:translate-x-1 transition-transform">
+            Novedades</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Descubre las últimas actualizaciones y mejoras del
+            sistema.</p>
+          <button
+            class="text-amber-600 dark:text-amber-400 text-sm font-medium flex items-center gap-1 hover:underline group-hover:gap-2 transition-all">
+            Ver novedades
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-bell">
+              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

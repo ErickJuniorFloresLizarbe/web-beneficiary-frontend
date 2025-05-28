@@ -1,0 +1,395 @@
+<div *ngIf="isVisible" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Overlay de fondo -->
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-80 transition-opacity"
+            aria-hidden="true"></div>
+
+        <!-- Centrar el modal -->
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <!-- Modal panel -->
+        <div
+            class="inline-block align-bottom bg-primary-10 dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+            <!-- Encabezado del formulario -->
+            <div
+                class="bg-gradient-to-r from-blue-600 to-indigo-700 dark:from-blue-700 dark:to-indigo-900 px-6 py-4 rounded-t-lg shadow-md">
+                <h2 class="text-xl font-bold text-white flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    {{ isEditMode ? 'Editar Reporte' : 'Nuevo Reporte' }}
+                </h2>
+            </div>
+
+            <form [formGroup]="reportForm" (ngSubmit)="saveReport()">
+                <div class="bg-primary-10 dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="w-full">
+                            <!-- Datos generales del reporte -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                <div>
+                                    <label for="year"
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Año</label>
+                                    <select id="year" formControlName="year" (change)="updateWorkshopDates()"
+                                        class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-primary-10 dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <option [ngValue]="null">Seleccione un año</option>
+                                        <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
+                                    </select>
+                                    <div *ngIf="reportForm.get('year')?.invalid && reportForm.get('year')?.touched"
+                                        class="text-red-500 dark:text-red-400 text-sm mt-1">
+                                        El año es requerido
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="trimester"
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Trimestre</label>
+                                    <select id="trimester" formControlName="trimester" (change)="updateWorkshopDates()"
+                                        class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-primary-10 dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <option [ngValue]="null">Seleccione un trimestre</option>
+                                        <option value="Enero-Marzo">Enero-Marzo</option>
+                                        <option value="Abril-Junio">Abril-Junio</option>
+                                        <option value="Julio-Septiembre">Julio-Septiembre</option>
+                                        <option value="Octubre-Diciembre">Octubre-Diciembre</option>
+                                    </select>
+                                    <div *ngIf="reportForm.get('trimester')?.invalid && reportForm.get('trimester')?.touched"
+                                        class="text-red-500 dark:text-red-400 text-sm mt-1">
+                                        El trimestre es requerido
+                                    </div>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="description"
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
+                                    <quill-editor formControlName="description" [modules]="{
+                                        toolbar: [
+                                            ['bold', 'italic', 'underline'],
+                                            [{ 'header': [1, 2, 3, false] }],
+                                            [{ list: 'ordered' }, { list: 'bullet' }],
+                                            [{ 'color': [] }, { 'background': [] }],
+                                            [{ 'align': [] }],
+                                            ['link', 'image'],
+                                            ['clean']
+                                        ]
+                                        }" [styles]="{height: '200px', 'border-radius': '0.375rem'}"
+                                        class="bg-primary-10 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"></quill-editor>
+                                    <div *ngIf="reportForm.get('description')?.invalid && reportForm.get('description')?.touched"
+                                        class="text-red-500 dark:text-red-400 text-sm mt-1">
+                                        La descripción es requerida
+                                    </div>
+                                </div>
+
+                                <div *ngIf="shouldShowSchedule()">
+                                    <label for="schedule"
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cronograma
+                                        (Imagen)</label>
+                                    <input type="file" id="schedule" (change)="onScheduleFileChange($event)"
+                                        accept="image/*"
+                                        class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 dark:file:bg-blue-900 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-800">
+
+                                    <!-- Tarjeta para mostrar el archivo seleccionado -->
+                                    <div *ngIf="scheduleFileName"
+                                        class="mt-3 border rounded-md p-3 bg-gray-50 dark:bg-gray-700 flex items-center justify-between cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                                        (click)="viewSchedule()">
+                                        <div class="flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-5 w-5 text-blue-500 dark:text-blue-400 mr-2" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
+                                                scheduleFileName
+                                                }}</span>
+                                        </div>
+                                        <span class="text-xs text-blue-600 dark:text-blue-400">Click para ver</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sección de talleres -->
+                            <div class="mb-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="text-md font-medium text-gray-900 dark:text-white">Talleres</h4>
+                                    <button type="button" (click)="addWorkshop()"
+                                        class="px-3 py-1 bg-blue-600 text-white rounded-md text-sm flex items-center hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v16m8-8H4" />
+                                        </svg>
+                                        Agregar Taller
+                                    </button>
+                                </div>
+
+                                <div formArrayName="workshops" class="max-h-[400px] overflow-y-auto pr-2">
+                                    <div *ngFor="let workshop of workshopsArray.controls; let i = index"
+                                        [formGroupName]="i"
+                                        class="border rounded-md p-4 mb-4 bg-gray-50 dark:bg-gray-700 workshop-item hover:shadow-md transition-all duration-200">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <h5 class="font-medium text-gray-900 dark:text-white flex items-center">
+                                                <span
+                                                    class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-2 text-xs">
+                                                    {{ i + 1 }}
+                                                </span>
+                                                Taller #{{ i + 1 }}
+                                            </h5>
+                                            <button type="button" (click)="removeWorkshop(i)"
+                                                class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-colors p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div class="relative">
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre
+                                                    del
+                                                    Taller</label>
+
+                                                <input type="text" formControlName="workshopName"
+                                                    (input)="onWorkshopNameInput(i)"
+                                                    (blur)="onWorkshopNameBlur(i); hideAutocompleteDelayed(i)"
+                                                    (focus)="onWorkshopNameInput(i)"
+                                                    class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-primary-10 dark:bg-gray-700 text-gray-900 dark:text-white">
+                                                <!-- Lista de sugerencias -->
+                                                <ul *ngIf="workshopSuggestions[i]?.length && showSuggestions[i]"
+                                                    class="absolute z-10 bg-primary-10 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 w-full mt-1 rounded-md shadow">
+                                                    <li *ngFor="let suggestion of workshopSuggestions[i]"
+                                                        (mousedown)="selectWorkshopSuggestion(i, suggestion)"
+                                                        class="px-3 py-2 hover:bg-blue-100 dark:hover:bg-blue-800 cursor-pointer text-gray-900 dark:text-white transition-colors">
+                                                        {{ suggestion.name }}
+                                                    </li>
+                                                </ul>
+
+                                                <div *ngIf="workshop.get('workshopName')?.invalid && workshop.get('workshopName')?.touched"
+                                                    class="text-red-500 dark:text-red-400 text-sm mt-1">
+                                                    El nombre del taller es requerido
+                                                </div>
+                                            </div>
+                                            <div class="md:col-span-2">
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
+                                                <textarea formControlName="description" rows="2"
+                                                    class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-primary-10 dark:bg-gray-700 text-gray-900 dark:text-white"></textarea>
+                                            </div>
+
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha
+                                                    Inicio</label>
+                                                <input type="date" formControlName="workshopDateStart"
+                                                    (change)="validateWorkshopDates(i)"
+                                                    class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-primary-10 dark:bg-gray-700 text-gray-900 dark:text-white">
+                                                <div *ngIf="workshop.get('workshopDateStart')?.invalid && workshop.get('workshopDateStart')?.touched"
+                                                    class="text-red-500 dark:text-red-400 text-sm mt-1">
+                                                    La fecha de inicio es requerida
+                                                </div>
+                                                <div *ngIf="workshop.get('workshopDateStart')?.value"
+                                                    class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                    {{ formatDate(workshop.get('workshopDateStart')?.value) }}
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha
+                                                    Fin</label>
+                                                <input type="date" formControlName="workshopDateEnd"
+                                                    (change)="validateWorkshopDates(i)"
+                                                    class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-primary-10 dark:bg-gray-700 text-gray-900 dark:text-white">
+                                                <div *ngIf="workshop.get('workshopDateEnd')?.invalid && workshop.get('workshopDateEnd')?.touched"
+                                                    class="text-red-500 dark:text-red-400 text-sm mt-1">
+                                                    La fecha de fin es requerida
+                                                </div>
+                                                <!-- Mensaje de error para el rango de fechas inválido -->
+                                                <div *ngIf="workshop.errors?.['invalidDateRange'] && workshop.get('workshopDateStart')?.value && workshop.get('workshopDateEnd')?.value"
+                                                    class="text-red-500 dark:text-red-400 text-sm mt-1">
+                                                    La fecha de fin debe ser posterior a la fecha de inicio
+                                                </div>
+                                                <div *ngIf="workshop.get('workshopDateEnd')?.value"
+                                                    class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                    {{ formatDate(workshop.get('workshopDateEnd')?.value) }}
+                                                </div>
+                                            </div>
+
+                                            <div class="md:col-span-2">
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Imágenes
+                                                    <span class="text-red-500 dark:text-red-400">*</span></label>
+                                                <input type="file" multiple accept="image/*"
+                                                    (change)="onImageFileChange($event, i)"
+                                                    class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 dark:file:bg-blue-900 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-800">
+                                                <div class="text-xs text-red-500 dark:text-red-400 mt-1">
+                                                    Se requiere al menos una imagen por taller
+                                                </div>
+
+                                                <!-- Previsualización de imágenes como tarjetas -->
+                                                <div *ngIf="workshopImages[i] && workshopImages[i].length > 0"
+                                                    class="mt-3 grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                    <div *ngFor="let image of workshopImages[i]; let imgIndex = index"
+                                                        class="relative border rounded-md p-2 bg-primary-10 dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                                                        (click)="openImageViewer(i, imgIndex)">
+                                                        <div class="flex items-center mb-2">
+                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                class="h-4 w-4 text-blue-500 dark:text-blue-400 mr-1"
+                                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                            </svg>
+                                                            <span
+                                                                class="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">{{
+                                                                image.name }}</span>
+                                                        </div>
+                                                        <img [src]="image.preview" alt="Preview"
+                                                            class="h-16 w-full object-cover rounded-md">
+                                                        <button type="button"
+                                                            (click)="removeImage(i, imgIndex); $event.stopPropagation()"
+                                                            class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 w-5 h-5 flex items-center justify-center">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3"
+                                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                        </button>
+                                                        <div
+                                                            class="text-xs text-center text-blue-600 dark:text-blue-400 mt-1">
+                                                            Click para
+                                                            ver</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Mensaje cuando no hay talleres -->
+                                    <div *ngIf="workshopsArray.length === 0"
+                                        class="text-center py-4 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-md">
+                                        No hay talleres agregados. Haga clic en "Agregar Taller" para comenzar.
+                                    </div>
+                                </div>
+
+                                <!-- Botón flotante para agregar taller -->
+                                <div *ngIf="workshopsArray.length > 0" class="fixed bottom-24 right-8 z-50">
+                                    <button type="button" (click)="addWorkshop()"
+                                        class="p-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 dark:hover:bg-blue-500 flex items-center justify-center transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v16m8-8H4" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">
+                    <button type="submit" [disabled]="reportForm.invalid || isSubmitting"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 sm:ml-3 sm:w-auto sm:text-sm transition-all duration-200"
+                        [ngClass]="{'opacity-50 cursor-not-allowed': reportForm.invalid || isSubmitting}">
+                        <svg *ngIf="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        {{ isSubmitting ? 'Guardando...' : (isEditMode ? 'Actualizar' : 'Guardar') }}
+                    </button>
+                    <button type="button" (click)="closeModal()"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-primary-10 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de visualización de imágenes -->
+<div *ngIf="showImageViewer" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="image-viewer" role="dialog"
+    aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center">
+        <!-- Overlay de fondo -->
+        <div class="fixed inset-0 bg-black bg-opacity-90 transition-opacity" aria-hidden="true"
+            (click)="closeImageViewer()"></div>
+
+        <!-- Contenido del visor -->
+        <div class="relative inline-block max-w-3xl w-full">
+            <button type="button" (click)="closeImageViewer()" class="absolute top-4 right-4 text-white z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <div class="relative">
+                <img [src]="currentImageUrl" alt="Imagen ampliada" class="max-h-[80vh] mx-auto">
+
+                <!-- Controles de navegación -->
+                <div class="absolute inset-0 flex items-center justify-between">
+                    <button *ngIf="currentImageIndex > 0" type="button" (click)="prevImage()"
+                        class="bg-black bg-opacity-50 text-white rounded-full p-2 ml-4 hover:bg-opacity-70">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button *ngIf="currentImageIndex < currentWorkshopImages.length - 1" type="button"
+                        (click)="nextImage()"
+                        class="bg-black bg-opacity-50 text-white rounded-full p-2 mr-4 hover:bg-opacity-70">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Miniaturas -->
+            <div class="mt-4 flex justify-center space-x-2 overflow-x-auto">
+                <button *ngFor="let image of currentWorkshopImages; let i = index" type="button" (click)="viewImage(i)"
+                    class="h-16 w-16 flex-shrink-0 rounded-md overflow-hidden"
+                    [ngClass]="{'ring-2 ring-blue-500': currentImageIndex === i}">
+                    <img [src]="image.preview" alt="Miniatura" class="h-full w-full object-cover">
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de visualización del cronograma -->
+<div *ngIf="showScheduleViewer" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="schedule-viewer"
+    role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center">
+        <!-- Overlay de fondo -->
+        <div class="fixed inset-0 bg-black bg-opacity-90 transition-opacity" aria-hidden="true"
+            (click)="closeScheduleViewer()"></div>
+
+        <!-- Contenido del visor -->
+        <div class="relative inline-block max-w-3xl w-full">
+            <button type="button" (click)="closeScheduleViewer()" class="absolute top-4 right-4 text-white z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <div class="relative">
+                <img [src]="schedulePreview" alt="Cronograma" class="max-h-[80vh] mx-auto">
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,148 @@
+/* Animaciones para mensajes de error */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+/* Estilos para los campos del formulario */
+.form-group {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.form-group:hover label {
+    color: #7c3aed;
+    /* primary-600 */
+}
+
+.dark .form-group:hover label {
+    color: #a78bfa;
+    /* primary-400 */
+}
+
+/* Efecto de enfoque para los campos */
+input:focus,
+select:focus {
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+.dark input:focus,
+.dark select:focus {
+    box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.2);
+}
+
+/* Estilos para los botones */
+button {
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+/* Estilos para la imagen de perfil */
+.rounded-full {
+    transition: all 0.3s ease;
+}
+
+.rounded-full:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+}
+
+.dark .rounded-full:hover {
+    box-shadow: 0 0 15px rgba(167, 139, 250, 0.3);
+}
+
+/* Estilos para los iconos en los campos */
+.text-gray-400 {
+    transition: color 0.3s ease;
+}
+
+input:focus+.text-gray-400,
+select:focus+.text-gray-400 {
+    color: #7c3aed;
+    /* primary-600 */
+}
+
+.dark input:focus+.text-gray-400,
+.dark select:focus+.text-gray-400 {
+    color: #a78bfa;
+    /* primary-400 */
+}
+
+/* Efecto de brillo en hover para botones */
+button:hover::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+    animation: shine 1s forwards;
+}
+
+.dark button:hover::after {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+/* Estilos para campos inválidos */
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+    border-color: #ef4444;
+    /* red-500 */
+}
+
+.dark input.ng-invalid.ng-touched,
+.dark select.ng-invalid.ng-touched {
+    border-color: #f87171;
+    /* red-400 */
+}
+
+input.ng-invalid.ng-touched:focus,
+select.ng-invalid.ng-touched:focus {
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+.dark input.ng-invalid.ng-touched:focus,
+.dark select.ng-invalid.ng-touched:focus {
+    box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.2);
+}
+
+/* Estilos responsivos para móviles */
+@media (max-width: 640px) {
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    button {
+        width: 100%;
+    }
+}

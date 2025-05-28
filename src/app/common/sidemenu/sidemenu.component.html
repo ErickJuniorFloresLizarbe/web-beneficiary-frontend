@@ -1,0 +1,589 @@
+<!-- Sidebar para desktop -->
+<div *ngIf="!isMobile"
+  class="h-screen transition-all duration-300 ease-in-out bg-gray-900 text-white border-r border-gray-700 shadow-lg overflow-y-auto flex flex-col"
+  [ngClass]="(isSidebarCollapsed$ | async) ? 'w-16' : 'w-64'">
+
+  <!-- Logo y Encabezado -->
+  <div class="py-4 px-4 flex items-center border-b border-gray-700 justify-between">
+    <div class="flex items-center" [ngClass]="(isSidebarCollapsed$ | async) ? 'justify-center w-full' : ''">
+      <!-- Logo cuando está expandido -->
+      <div *ngIf="!(isSidebarCollapsed$ | async)"
+        class="bg-gradient-to-r from-indigo-500 to-purple-600 p-2 rounded-lg shadow-lg">
+        <img src="https://i.ibb.co/JqmVCv1/logo.png" alt="Logo" class="h-8 w-auto">
+      </div>
+
+      <!-- Icono cuando está colapsado -->
+      <button *ngIf="(isSidebarCollapsed$ | async)" (click)="toggleSidebar()"
+        class="text-blue-400 hover:text-blue-300 transition-colors duration-200 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-home">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      </button>
+
+      <div class="ml-3" *ngIf="!(isSidebarCollapsed$ | async)">
+        <h1 class="text-lg font-bold text-white tracking-wide">
+          NPH
+        </h1>
+        <div class="text-xs text-blue-300 font-medium">Sistema de Gestión</div>
+      </div>
+    </div>
+
+    <!-- Botón para colapsar sidebar en desktop -->
+    <button *ngIf="!(isSidebarCollapsed$ | async)" (click)="toggleSidebar()"
+      class="text-gray-400 hover:text-white focus:outline-none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="lucide lucide-panel-left-close">
+        <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+        <path d="M9 3v18" />
+        <path d="m16 15-3-3 3-3" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Menú principal -->
+  <div class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+    <ng-container *ngFor="let item of menuItems; let i = index">
+      <!-- Dropdown con submenús -->
+      <div *ngIf="item.children && item.children.length; else singleItem">
+        <div
+          class="flex items-center px-3 py-2 rounded-md cursor-pointer transition-all duration-200 hover:bg-gray-800 group"
+          [ngClass]="dropdownIndex === i ? 'bg-gray-800 text-white' : 'text-gray-300'" (click)="toggleDropdown(i)">
+
+          <!-- Icono -->
+          <svg *ngIf="item.icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            [ngClass]="'lucide lucide-' + item.icon" class="text-blue-400">
+            <ng-container [ngSwitch]="item.icon">
+              <ng-container *ngSwitchCase="'grid'">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </ng-container>
+              <ng-container *ngSwitchCase="'layers'">
+                <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                <polyline points="2 17 12 22 22 17" />
+                <polyline points="2 12 12 17 22 12" />
+              </ng-container>
+              <ng-container *ngSwitchCase="'layout-dashboard'">
+                <rect width="7" height="9" x="3" y="3" rx="1" />
+                <rect width="7" height="5" x="14" y="3" rx="1" />
+                <rect width="7" height="9" x="14" y="12" rx="1" />
+                <rect width="7" height="5" x="3" y="16" rx="1" />
+              </ng-container>
+            </ng-container>
+          </svg>
+
+          <!-- Título -->
+          <span class="ml-3 font-medium text-sm" [ngClass]="(isSidebarCollapsed$ | async) ? 'hidden' : ''">
+            {{ item.title }}
+          </span>
+
+          <!-- Flecha -->
+          <svg *ngIf="!(isSidebarCollapsed$ | async)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" class="ml-auto transition-transform duration-200 text-gray-400"
+            [ngClass]="dropdownIndex === i ? 'rotate-180' : ''">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+
+        <!-- Submenú -->
+        <div *ngIf="dropdownIndex === i && !(isSidebarCollapsed$ | async)" class="pl-6 mt-1 space-y-1">
+          <ng-container *ngFor="let child of item.children; let j = index">
+            <a [routerLink]="child.path" routerLinkActive="bg-blue-800 text-white"
+              class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-200">
+
+              <!-- Icono del submenú -->
+              <svg *ngIf="child.icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                [ngClass]="'lucide lucide-' + child.icon" class="text-blue-400">
+                <ng-container [ngSwitch]="child.icon">
+                  <!-- Usuarios -->
+                  <ng-container *ngSwitchCase="'users'">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </ng-container>
+
+                  <!-- Usuario -->
+                  <ng-container *ngSwitchCase="'user'">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </ng-container>
+
+                  <!-- Beneficiarios (user-plus) -->
+                  <ng-container *ngSwitchCase="'user-plus'">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="8.5" cy="7" r="4" />
+                    <line x1="20" x2="20" y1="8" y2="14" />
+                    <line x1="23" x2="17" y1="11" y2="11" />
+                  </ng-container>
+
+                  <!-- Talleres (hammer) -->
+                  <ng-container *ngSwitchCase="'hammer'">
+                    <path d="m15 12-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L12 9" />
+                    <path d="M17.64 15 22 10.64" />
+                    <path
+                      d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16.01 4.6a5.56 5.56 0 0 0-3.94-1.64H9l.92.82A6.18 6.18 0 0 1 12 8.4v1.56l2 2h2.47l2.26 1.91" />
+                  </ng-container>
+
+                  <!-- Sesiones (calendar-clock) -->
+                  <ng-container *ngSwitchCase="'calendar-clock'">
+                    <path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7.5" />
+                    <path d="M16 2v4" />
+                    <path d="M8 2v4" />
+                    <path d="M3 10h18" />
+                    <circle cx="18" cy="18" r="4" />
+                    <path d="M18 16.5V18l1 1" />
+                  </ng-container>
+
+                  <!-- Reloj (clock) -->
+                  <ng-container *ngSwitchCase="'clock'">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </ng-container>
+
+                  <!-- Metas (target) -->
+                  <ng-container *ngSwitchCase="'target'">
+                    <circle cx="12" cy="12" r="10" />
+                    <circle cx="12" cy="12" r="6" />
+                    <circle cx="12" cy="12" r="2" />
+                  </ng-container>
+
+                  <!-- Grupo de usuarios -->
+                  <ng-container *ngSwitchCase="'users-group'">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </ng-container>
+
+                  <!-- Calendario con check -->
+                  <ng-container *ngSwitchCase="'calendar-check'">
+                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                    <line x1="16" x2="16" y1="2" y2="6" />
+                    <line x1="8" x2="8" y1="2" y2="6" />
+                    <line x1="3" x2="21" y1="10" y2="10" />
+                    <path d="m9 16 2 2 4-4" />
+                  </ng-container>
+
+                  <!-- Archivo de texto -->
+                  <ng-container *ngSwitchCase="'file-text'">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" x2="8" y1="13" y2="13" />
+                    <line x1="16" x2="8" y1="17" y2="17" />
+                    <line x1="10" x2="8" y1="9" y2="9" />
+                  </ng-container>
+
+                  <!-- Familias (home) -->
+                  <ng-container *ngSwitchCase="'home'">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </ng-container>
+
+                  <!-- Transformación (sparkles) -->
+                  <ng-container *ngSwitchCase="'sparkles'">
+                    <path
+                      d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                    <path d="M5 3v4" />
+                    <path d="M19 17v4" />
+                    <path d="M3 5h4" />
+                    <path d="M17 19h4" />
+                  </ng-container>
+
+                  <!-- Asistencias (clipboard-check) -->
+                  <ng-container *ngSwitchCase="'clipboard-check'">
+                    <path d="M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-12a2 2 0 0 0-2-2h-2" />
+                    <path d="M16 3H8a2 2 0 0 0-2 2v3h12V5a2 2 0 0 0-2-2Z" />
+                    <path d="m9 14 2 2 4-4" />
+                  </ng-container>
+
+                  <!-- Temas (book-open) -->
+                  <ng-container *ngSwitchCase="'book-open'">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                  </ng-container>
+
+                  <!-- Reportes (bar-chart-3) -->
+                  <ng-container *ngSwitchCase="'bar-chart-3'">
+                    <path d="M3 3v18h18" />
+                    <path d="M8 17V9" />
+                    <path d="M12 17v-5" />
+                    <path d="M16 17v-3" />
+                  </ng-container>
+
+                  <!-- Círculo de alerta -->
+                  <ng-container *ngSwitchCase="'alert-circle'">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" x2="12" y1="8" y2="12" />
+                    <line x1="12" x2="12.01" y1="16" y2="16" />
+                  </ng-container>
+
+                  <!-- Refrescar -->
+                  <ng-container *ngSwitchCase="'refresh-ccw'">
+                    <path d="M3 2v6h6" />
+                    <path d="M21 12A9 9 0 0 0 6 5.3L3 8" />
+                    <path d="M21 22v-6h-6" />
+                    <path d="M3 12a9 9 0 0 0 15 6.7l3-2.7" />
+                  </ng-container>
+                </ng-container>
+              </svg>
+
+              <span class="ml-2">{{ child.title }}</span>
+            </a>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Ítems sin hijos -->
+      <ng-template #singleItem>
+        <a [routerLink]="item.path" routerLinkActive="bg-blue-800 text-white"
+          class="flex items-center px-3 py-2 rounded-md transition-all duration-200 text-gray-300 hover:bg-gray-800 hover:text-white group">
+
+          <!-- Icono -->
+          <svg *ngIf="item.icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            [ngClass]="'lucide lucide-' + item.icon" class="text-blue-400">
+            <ng-container [ngSwitch]="item.icon">
+              <ng-container *ngSwitchCase="'layout-dashboard'">
+                <rect width="7" height="9" x="3" y="3" rx="1" />
+                <rect width="7" height="5" x="14" y="3" rx="1" />
+                <rect width="7" height="9" x="14" y="12" rx="1" />
+                <rect width="7" height="5" x="3" y="16" rx="1" />
+              </ng-container>
+            </ng-container>
+          </svg>
+
+          <span class="ml-3 text-sm font-medium" [ngClass]="(isSidebarCollapsed$ | async) ? 'hidden' : ''">
+            {{ item.title }}
+          </span>
+        </a>
+      </ng-template>
+    </ng-container>
+  </div>
+
+  <!-- Footer con información del usuario y toggle de tema -->
+  <div class="mt-auto border-t border-gray-700 p-4">
+    <div class="flex items-center justify-between"
+      [ngClass]="(isSidebarCollapsed$ | async) ? 'flex-col space-y-4' : ''">
+      <!-- Toggle de tema - visible solo cuando el sidebar está colapsado -->
+      <button *ngIf="(isSidebarCollapsed$ | async)" (click)="toggleDarkMode()"
+        class="p-2 rounded-full hover:bg-gray-800 transition-colors duration-200 focus:outline-none"
+        [title]="(darkMode$ | async) ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+        <!-- Luna (modo claro activo) -->
+        <svg *ngIf="!(darkMode$ | async)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-moon text-gray-300">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+        </svg>
+
+        <!-- Sol (modo oscuro activo) -->
+        <svg *ngIf="(darkMode$ | async)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-sun text-yellow-300">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2" />
+          <path d="M12 20v2" />
+          <path d="m4.93 4.93 1.41 1.41" />
+          <path d="m17.66 17.66 1.41 1.41" />
+          <path d="M2 12h2" />
+          <path d="M20 12h2" />
+          <path d="m6.34 17.66-1.41 1.41" />
+          <path d="m19.07 4.93-1.41 1.41" />
+        </svg>
+      </button>
+      <!-- Botón para expandir sidebar cuando está colapsado -->
+      <button *ngIf="(isSidebarCollapsed$ | async)" (click)="toggleSidebar()"
+        class="p-2 rounded-full hover:bg-gray-800 transition-colors duration-200 focus:outline-none"
+        title="Expandir menú">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-panel-left text-gray-300">
+          <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+          <path d="M9 3v18" />
+        </svg>
+      </button>
+
+      <!-- Botón de cerrar sesión -->
+      <button (click)="logout()"
+        class="flex items-center text-sm text-red-400 hover:text-red-300 transition-colors duration-200"
+        [ngClass]="(isSidebarCollapsed$ | async) ? 'justify-center' : ''">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-log-out">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" x2="9" y1="12" y2="12" />
+        </svg>
+        <span *ngIf="!(isSidebarCollapsed$ | async)" class="ml-2">Cerrar sesión</span>
+      </button>
+
+      <!-- Versión -->
+      <div *ngIf="!(isSidebarCollapsed$ | async)" class="text-xs text-gray-500">v1.2.0</div>
+    </div>
+  </div>
+</div>
+
+<!-- Sidebar para móvil (drawer) -->
+<!-- Overlay para cerrar el sidebar al hacer clic fuera -->
+<div *ngIf="isMobile && isMobileMenuOpen" class="fixed inset-0 bg-black bg-opacity-50 z-40"
+  (click)="toggleMobileSidebar(false)">
+</div>
+
+<!-- Sidebar móvil - IMPORTANTE: Ahora siempre está en el DOM pero se muestra/oculta con clases -->
+<div *ngIf="isMobile"
+  class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto"
+  [ngClass]="isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'">
+
+  <!-- Cabecera del sidebar móvil -->
+  <div class="py-4 px-4 flex items-center justify-between border-b border-gray-700">
+    <div class="flex items-center">
+      <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-2 rounded-lg shadow-lg">
+        <img src="https://i.ibb.co/JqmVCv1/logo.png" alt="Logo" class="h-8 w-auto">
+      </div>
+      <div class="ml-3">
+        <h1 class="text-lg font-bold text-white tracking-wide">
+          NPH
+        </h1>
+        <div class="text-xs text-blue-300 font-medium">Sistema de Gestión</div>
+      </div>
+    </div>
+
+    <!-- Botón para cerrar sidebar móvil -->
+    <button (click)="toggleMobileSidebar(false)" class="text-gray-400 hover:text-white focus:outline-none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
+        <path d="M18 6 6 18" />
+        <path d="m6 6 12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Menú principal móvil -->
+  <div class="px-2 py-4 space-y-1">
+    <ng-container *ngFor="let item of menuItems; let i = index">
+      <!-- Dropdown con submenús -->
+      <div *ngIf="item.children && item.children.length; else singleItemMobile">
+        <div
+          class="flex items-center px-3 py-2 rounded-md cursor-pointer transition-all duration-200 hover:bg-gray-800 group"
+          [ngClass]="dropdownIndex === i ? 'bg-gray-800 text-white' : 'text-gray-300'" (click)="toggleDropdown(i)">
+
+          <!-- Icono -->
+          <svg *ngIf="item.icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            [ngClass]="'lucide lucide-' + item.icon" class="text-blue-400">
+            <ng-container [ngSwitch]="item.icon">
+              <ng-container *ngSwitchCase="'grid'">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </ng-container>
+              <ng-container *ngSwitchCase="'layers'">
+                <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                <polyline points="2 17 12 22 22 17" />
+                <polyline points="2 12 12 17 22 12" />
+              </ng-container>
+              <ng-container *ngSwitchCase="'layout-dashboard'">
+                <rect width="7" height="9" x="3" y="3" rx="1" />
+                <rect width="7" height="5" x="14" y="3" rx="1" />
+                <rect width="7" height="9" x="14" y="12" rx="1" />
+                <rect width="7" height="5" x="3" y="16" rx="1" />
+              </ng-container>
+            </ng-container>
+          </svg>
+
+          <!-- Título -->
+          <span class="ml-3 font-medium text-sm">
+            {{ item.title }}
+          </span>
+
+          <!-- Flecha -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="ml-auto transition-transform duration-200 text-gray-400"
+            [ngClass]="dropdownIndex === i ? 'rotate-180' : ''">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+
+        <!--  : ''">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+
+        <!-- Submenú -->
+        <div *ngIf="dropdownIndex === i" class="pl-6 mt-1 space-y-1">
+          <ng-container *ngFor="let child of item.children; let j = index">
+            <a [routerLink]="child.path" routerLinkActive="bg-blue-800 text-white" (click)="toggleMobileSidebar(false)"
+              class="flex items-center px-3 py-2 text-sm rounded-md text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-200">
+
+              <!-- Icono del submenú -->
+              <svg *ngIf="child.icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                [ngClass]="'lucide lucide-' + child.icon" class="text-blue-400">
+                <ng-container [ngSwitch]="child.icon">
+                  <!-- Usuarios -->
+                  <ng-container *ngSwitchCase="'users'">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </ng-container>
+
+                  <!-- Beneficiarios (user-plus) -->
+                  <ng-container *ngSwitchCase="'user-plus'">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="8.5" cy="7" r="4" />
+                    <line x1="20" x2="20" y1="8" y2="14" />
+                    <line x1="23" x2="17" y1="11" y2="11" />
+                  </ng-container>
+
+                  <!-- Talleres (hammer) -->
+                  <ng-container *ngSwitchCase="'hammer'">
+                    <path d="m15 12-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L12 9" />
+                    <path d="M17.64 15 22 10.64" />
+                    <path
+                      d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16.01 4.6a5.56 5.56 0 0 0-3.94-1.64H9l.92.82A6.18 6.18 0 0 1 12 8.4v1.56l2 2h2.47l2.26 1.91" />
+                  </ng-container>
+
+                  <!-- Sesiones (calendar-clock) -->
+                  <ng-container *ngSwitchCase="'calendar-clock'">
+                    <path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7.5" />
+                    <path d="M16 2v4" />
+                    <path d="M8 2v4" />
+                    <path d="M3 10h18" />
+                    <circle cx="18" cy="18" r="4" />
+                    <path d="M18 16.5V18l1 1" />
+                  </ng-container>
+
+                  <!-- Metas (target) -->
+                  <ng-container *ngSwitchCase="'target'">
+                    <circle cx="12" cy="12" r="10" />
+                    <circle cx="12" cy="12" r="6" />
+                    <circle cx="12" cy="12" r="2" />
+                  </ng-container>
+
+                  <!-- Familias (home) -->
+                  <ng-container *ngSwitchCase="'home'">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </ng-container>
+
+                  <!-- Transformación (sparkles) -->
+                  <ng-container *ngSwitchCase="'sparkles'">
+                    <path
+                      d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                    <path d="M5 3v4" />
+                    <path d="M19 17v4" />
+                    <path d="M3 5h4" />
+                    <path d="M17 19h4" />
+                  </ng-container>
+
+                  <!-- Asistencias (clipboard-check) -->
+                  <ng-container *ngSwitchCase="'clipboard-check'">
+                    <path d="M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-12a2 2 0 0 0-2-2h-2" />
+                    <path d="M16 3H8a2 2 0 0 0-2 2v3h12V5a2 2 0 0 0-2-2Z" />
+                    <path d="m9 14 2 2 4-4" />
+                  </ng-container>
+
+                  <!-- Temas (book-open) -->
+                  <ng-container *ngSwitchCase="'book-open'">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                  </ng-container>
+
+                  <!-- Reportes (bar-chart-3) -->
+                  <ng-container *ngSwitchCase="'bar-chart-3'">
+                    <path d="M3 3v18h18" />
+                    <path d="M8 17V9" />
+                    <path d="M12 17v-5" />
+                    <path d="M16 17v-3" />
+                  </ng-container>
+                </ng-container>
+              </svg>
+
+              <span class="ml-2">{{ child.title }}</span>
+            </a>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Ítems sin hijos -->
+      <ng-template #singleItemMobile>
+        <a [routerLink]="item.path" routerLinkActive="bg-blue-800 text-white" (click)="toggleMobileSidebar(false)"
+          class="flex items-center px-3 py-2 rounded-md transition-all duration-200 text-gray-300 hover:bg-gray-800 hover:text-white group">
+
+          <!-- Icono -->
+          <svg *ngIf="item.icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            [ngClass]="'lucide lucide-' + item.icon" class="text-blue-400">
+            <ng-container [ngSwitch]="item.icon">
+              <ng-container *ngSwitchCase="'layout-dashboard'">
+                <rect width="7" height="9" x="3" y="3" rx="1" />
+                <rect width="7" height="5" x="14" y="3" rx="1" />
+                <rect width="7" height="9" x="14" y="12" rx="1" />
+                <rect width="7" height="5" x="3" y="16" rx="1" />
+              </ng-container>
+            </ng-container>
+          </svg>
+
+          <span class="ml-3 text-sm font-medium">
+            {{ item.title }}
+          </span>
+        </a>
+      </ng-template>
+    </ng-container>
+  </div>
+
+  <!-- Footer móvil -->
+  <div class="mt-auto border-t border-gray-700 p-4">
+    <div class="flex items-center justify-between">
+      <!-- Toggle de tema -->
+      <button (click)="toggleDarkMode()"
+        class="p-2 rounded-full hover:bg-gray-800 transition-colors duration-200 focus:outline-none">
+        <svg *ngIf="!(darkMode$ | async)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-moon text-gray-300">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+        </svg>
+        <svg *ngIf="(darkMode$ | async)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-sun text-yellow-300">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2" />
+          <path d="M12 20v2" />
+          <path d="m4.93 4.93 1.41 1.41" />
+          <path d="m17.66 17.66 1.41 1.41" />
+          <path d="M2 12h2" />
+          <path d="M20 12h2" />
+          <path d="m6.34 17.66-1.41 1.41" />
+          <path d="m19.07 4.93-1.41 1.41" />
+        </svg>
+      </button>
+
+      <!-- Botón de cerrar sesión -->
+      <button (click)="logout()"
+        class="flex items-center text-sm text-red-400 hover:text-red-300 transition-colors duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-log-out">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" x2="9" y1="12" y2="12" />
+        </svg>
+        <span class="ml-2">Cerrar sesión</span>
+      </button>
+
+      <!-- Versión -->
+      <div class="text-xs text-gray-500">v1.2.0</div>
+    </div>
+  </div>
+</div>

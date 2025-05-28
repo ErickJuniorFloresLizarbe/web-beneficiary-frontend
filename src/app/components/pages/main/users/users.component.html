@@ -1,0 +1,236 @@
+<div class="min-h-screen container mx-auto px-4 py-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Gestión de Usuarios</h1>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <!-- Barra de búsqueda -->
+            <div class="relative w-full sm:w-auto">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="onSearch($event)"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder-gray-400"
+                    placeholder="Buscar usuarios...">
+            </div>
+
+            <button *ngIf="isAdmin" (click)="openForm()"
+                class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md flex items-center w-full sm:w-auto justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Nuevo Usuario
+            </button>
+        </div>
+    </div>
+
+    <!-- Estado de carga -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-10">
+        <div
+            class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600 dark:border-primary-400">
+        </div>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div *ngIf="error"
+        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6 dark:bg-red-900 dark:border-red-700 dark:text-red-100"
+        roles="alert">
+        <span class="block sm:inline">{{ error }}</span>
+    </div>
+
+    <!-- Tabla de usuarios -->
+    <div *ngIf="!isLoading && !error"
+        class="bg-primary-10 dark:bg-gray-800 shadow-md rounded-lg overflow-hidden max-w-screen-xl mx-auto p-4">
+        <div class="overflow-x-auto max-w-full">
+            <!-- Tabla para pantallas medianas y grandes -->
+            <table class="w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700 hidden md:table">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th
+                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-20">
+                            Foto</th>
+                        <th
+                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-40">
+                            Nombre</th>
+                        <th
+                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-40">
+                            Documento</th>
+                        <th
+                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-32">
+                            Teléfono</th>
+                        <th
+                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-48">
+                            Email</th>
+                        <th
+                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-32">
+                            Rol</th>
+                        <th
+                            class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-32">
+                            Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody class="bg-primary-10 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr *ngFor="let user of filteredUsers" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <!-- Foto de perfil -->
+                        <td class="px-4 py-4 whitespace-nowrap">
+                            <img [src]="user.profileImage || 'https://via.placeholder.com/40'"
+                                alt="Foto de {{ user.name }} {{ user.lastName }}"
+                                class="h-10 w-10 rounded-full object-cover border border-gray-300 dark:border-gray-600" />
+                        </td>
+
+                        <!-- Nombre -->
+                        <td class="px-4 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white truncate" [title]="user.name">
+                                {{ user.name }}
+                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 truncate" [title]="user.lastName">{{
+                                user.lastName }}
+                            </div>
+                        </td>
+
+                        <!-- Documento -->
+                        <td class="px-4 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white truncate" [title]="user.documentType">{{
+                                user.documentType
+                                }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 truncate"
+                                [title]="user.documentNumber">{{
+                                user.documentNumber }}</div>
+                        </td>
+
+                        <!-- Teléfono -->
+                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 truncate"
+                            [title]="user.cellPhone">
+                            {{ user.cellPhone }}
+                        </td>
+
+                        <!-- Email -->
+                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 truncate"
+                            [title]="user.email">
+                            {{ user.email }}
+                        </td>
+
+                        <!-- Rol -->
+                        <td class="px-4 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                [ngClass]="user.role[0] === 'ADMIN' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'">
+                                {{ user.role[0] === 'ADMIN' ? 'Administrador' : 'Usuario' }}
+                            </span>
+                        </td>
+
+                        <!-- Acciones -->
+                        <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-end gap-3">
+                            <!-- Editar -->
+                            <button *ngIf="isAdmin" (click)="openForm(user)" title="Editar usuario"
+                                class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-200">
+                                <i class="fas fa-edit text-lg"></i>
+                            </button>
+
+                            <!-- Eliminar -->
+                            <button *ngIf="isAdmin" (click)="deleteUser(user.id!)" title="Eliminar usuario"
+                                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors duration-200">
+                                <i class="fas fa-trash-alt text-lg"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Fila si no hay usuarios -->
+                    <tr *ngIf="filteredUsers.length === 0">
+                        <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                            No hay usuarios registrados
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Vista de tarjetas para móviles -->
+            <div class="grid grid-cols-1 gap-4 md:hidden">
+                <div *ngFor="let user of filteredUsers"
+                    class="bg-primary-10 dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center space-x-4 mb-3">
+                        <img [src]="user.profileImage || 'https://via.placeholder.com/40'"
+                            alt="Foto de {{ user.name }} {{ user.lastName }}"
+                            class="h-12 w-12 rounded-full object-cover border border-gray-300 dark:border-gray-600" />
+                        <div>
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ user.name }} {{
+                                user.lastName }}</div>
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full mt-1"
+                                [ngClass]="user.role[0] === 'ADMIN' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'">
+                                {{ user.role[0] === 'ADMIN' ? 'Administrador' : 'Usuario' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+                        <div>
+                            <div class="text-gray-500 dark:text-gray-400">Documento:</div>
+                            <div class="text-gray-900 dark:text-white">{{ user.documentType }} {{ user.documentNumber }}
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-gray-500 dark:text-gray-400">Teléfono:</div>
+                            <div class="text-gray-900 dark:text-white">{{ user.cellPhone }}</div>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="text-gray-500 dark:text-gray-400">Email:</div>
+                            <div class="text-gray-900 dark:text-white truncate">{{ user.email }}</div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 border-t border-gray-200 dark:border-gray-700 pt-3">
+                        <button *ngIf="isAdmin" (click)="openForm(user)" title="Editar usuario"
+                            class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-200">
+                            <i class="fas fa-edit text-lg"></i>
+                        </button>
+                        <button *ngIf="isAdmin" (click)="deleteUser(user.id!)" title="Eliminar usuario"
+                            class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors duration-200">
+                            <i class="fas fa-trash-alt text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mensaje si no hay usuarios (móvil) -->
+                <div *ngIf="filteredUsers.length === 0"
+                    class="bg-primary-10 dark:bg-gray-800 p-4 rounded-lg shadow text-center">
+                    <p class="text-gray-500 dark:text-gray-400">No hay usuarios registrados</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de formulario -->
+    <div *ngIf="isFormVisible"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 dark:bg-gray-900 dark:bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="bg-primary-10 dark:bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-4 sm:p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-white">
+                        {{ isEditing ? 'Editar Usuario' : 'Nuevo Usuario' }}
+                    </h2>
+                    <button (click)="closeForm()"
+                        class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Debug output to verify selectedUser data -->
+                <div *ngIf="selectedUser" class="hidden">
+                    Debug: {{selectedUser | json}}
+                </div>
+
+                <app-user-modal *ngIf="selectedUser" [user]="selectedUser" (formSubmit)="saveUser($event)"
+                    (formCancel)="closeForm()">
+                </app-user-modal>
+            </div>
+        </div>
+    </div>
+</div>

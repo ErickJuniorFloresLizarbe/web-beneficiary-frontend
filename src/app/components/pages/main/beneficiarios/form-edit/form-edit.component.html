@@ -1,0 +1,193 @@
+<!-- Modal -->
+<div *ngIf="isModalVisible" id="infoModal"
+  class="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh]  overflow-y-auto">
+
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold text-gray-800">Información del Estudiante</h2>
+      <button (click)="closeModal()" class="text-gray-600 hover:text-gray-900">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 p-4 bg-gray-100 rounded shadow-sm">
+      <div class="mb-2">
+        <label for="schollName" class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-school ml-2 me-2"></i> Institución:
+        </label>
+        <input id="schollName" type="text"
+          class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedEducation.schollName">
+      </div>
+      <div class="mb-2">
+        <label for="degreeStudy" class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-graduation-cap ml-2 me-2"></i> Nivel de Estudio:
+        </label>
+        <input id="degreeStudy" type="text"
+          class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedEducation.degreeStudy">
+      </div>
+      <div class="mb-2">
+        <label for="gradeBook" class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-book ml-2 me-2"></i> Grado:
+        </label>
+        <input id="gradeBook" type="text"
+          class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedEducation.gradeBook">
+      </div>
+      <div class="mb-2">
+        <label for="gradeAverage" class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-star-half-alt ml-2 me-2"></i> Promedio de Calificaciones:
+        </label>
+        <input id="gradeAverage" type="number"
+          class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedEducation.gradeAverage">
+      </div>
+      <div class="mb-2">
+        <label for="fullNotebook" class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-book-open ml-2 me-2"></i> Cuaderno Completo:
+        </label>
+        <select id="fullNotebook"
+          class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedEducation.fullNotebook">
+          <option value="Completo">Completo</option>
+          <option value="Incompleto">Incompleto</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label for="assistance" class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-user-check ml-2 me-2"></i> Asistencia:
+        </label>
+        <select id="assistance"
+          class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedEducation.assistance">
+          <option value="Regular">Regular</option>
+          <option value="Buena">Buena</option>
+          <option value="Mala">Mala</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label for="tutorials" class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-user-tie ml-2 me-2"></i> Tutoriales:
+        </label>
+        <select id="tutorials"
+          class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedEducation.tutorials">
+          <option value="Si">Si</option>
+          <option value="No">No</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label for="entryDate" class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-calendar-alt ml-2 me-2"></i> Fecha editada:
+        </label>
+        <input id="entryDate" type="date"
+          class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedEducation.entryDate">
+      </div>
+    </div>
+
+    <div class="mt-6 text-right">
+      <button (click)="saveChanges()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal en form-edit.component.html -->
+<div *ngIf="isHealthModalVisible" id="healthModal"
+  class="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh]  overflow-y-auto">
+
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold text-gray-800">Información de Salud General</h2>
+      <button (click)="closeHealthModal()" class="text-gray-600 hover:text-gray-900">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 p-4 bg-gray-100 rounded shadow-sm">
+      <div class="mb-2">
+        <label class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-syringe ml-2 me-2"></i> Vacuna:
+        </label>
+        <select class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedHealth.vaccine">
+          <option value="Esquema Completo">Esquema Completo</option>
+          <option value="Incompleto">Incompleto</option>
+          <option value="Sin información">Sin información</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-virus ml-2 me-2"></i> VPH:
+        </label>
+        <select class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedHealth.vph">
+          <option value="Aplicada">Aplicada</option>
+          <option value="No aplicada">No aplicada</option>
+          <option value="Sin información">Sin información</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-viruses ml-2 me-2"></i> Influenza:
+        </label>
+        <select class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedHealth.influenza">
+          <option value="Aplicada">Aplicada</option>
+          <option value="No aplicada">No aplicada</option>
+          <option value="Sin información">Sin información</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-pills ml-2 me-2"></i> Desparasitación:
+        </label>
+        <select class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedHealth.deworming">
+          <option value="Aplicada">Aplicada</option>
+          <option value="No aplicada">No aplicada</option>
+          <option value="Sin información">Sin información</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-tint ml-2 me-2"></i> Hemoglobina:
+        </label>
+        <select class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedHealth.hemoglobin">
+          <option value="Normal">Normal</option>
+          <option value="Baja">Baja</option>
+          <option value="Alta">Alta</option>
+          <option value="Sin información">Sin información</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label for="condicionBeneficiary" class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-heartbeat ml-2 me-2"></i> Condición de salud:
+        </label>
+        <input id="condicionBeneficiary" type="text"
+          class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedHealth.condicionBeneficiary">
+      </div>
+      <div class="mb-2">
+        <label for="applicationDate" class="form-label text-muted d-flex align-items-center mb-1">
+          <i class="fas fa-calendar-alt ml-2 me-2"></i> Fecha editada:
+        </label>
+        <input id="applicationDate" type="date"
+          class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2"
+          [(ngModel)]="selectedHealth.applicationDate">
+      </div>
+    </div>
+
+    <div class="mt-6 text-right">
+      <button (click)="saveHealthChanges()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>

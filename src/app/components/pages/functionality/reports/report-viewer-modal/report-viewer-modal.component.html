@@ -1,0 +1,269 @@
+<div *ngIf="isVisible" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Overlay de fondo -->
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-80 transition-opacity"
+            aria-hidden="true" (click)="closeModal()"></div>
+
+        <!-- Centrar el modal -->
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <!-- Modal panel -->
+        <div
+            class="inline-block align-bottom bg-primary-10 dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+            <!-- Encabezado del modal -->
+            <div
+                class="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 px-6 py-4 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-white">
+                    Detalles del Reporte
+                </h2>
+                <button type="button" (click)="closeModal()" class="text-white hover:text-gray-200 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="bg-primary-10 dark:bg-gray-800 px-6 py-4 sm:p-6">
+                <!-- Datos generales del reporte -->
+                <div class="mb-8 border-b border-gray-200 dark:border-gray-700 pb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Información General</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
+                            <span class="block text-sm font-medium text-gray-700 dark:text-gray-300">Año</span>
+                            <span class="block text-lg font-semibold text-gray-900 dark:text-white">{{
+                                getSafeReport().year }}
+                            </span>
+                        </div>
+
+                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
+                            <span class="block text-sm font-medium text-gray-700 dark:text-gray-300">Trimestre</span>
+                            <span class="block text-lg font-semibold text-gray-900 dark:text-white">{{
+                                getSafeReport().trimester }}</span>
+                        </div>
+
+                        <div class="md:col-span-2 bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
+                            <span class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción</span>
+                            <div class="prose prose-slate dark:prose-invert prose-lg max-h-[60vh] overflow-y-auto break-words whitespace-normal"
+                                [innerHTML]="getSanitizedDescription()"></div>
+                        </div>
+
+                        <!-- Mostrar cronograma si existe -->
+                        <div *ngIf="getSafeReport().schedule" class="md:col-span-2">
+                            <span
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cronograma</span>
+                            <div class="border rounded-md p-2 bg-gray-50 dark:bg-gray-700 inline-block cursor-pointer"
+                                (click)="viewSchedule()">
+                                <img [src]="schedulePreview" alt="Cronograma"
+                                    class="max-h-40 max-w-full object-contain">
+                                <div class="text-xs text-center text-blue-600 dark:text-blue-400 mt-1">Click para
+                                    ampliar</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de talleres -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Talleres ({{
+                            getWorkshops().length }})</h3>
+
+                        <div *ngIf="getWorkshops().length > 0" class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ currentWorkshopIndex + 1 }} de {{
+                                getWorkshops().length }}</span>
+                            <button *ngIf="currentWorkshopIndex > 0" (click)="prevWorkshop()"
+                                class="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-400"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <button *ngIf="currentWorkshopIndex < getWorkshops().length - 1" (click)="nextWorkshop()"
+                                class="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-400"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Contenido del taller actual -->
+                    <div *ngIf="getWorkshops().length > 0" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <ng-container *ngIf="getCurrentWorkshop() as workshop">
+                            <div class="mb-4">
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                    {{ workshop.workshopName }}
+                                </h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                                    {{ workshop.description || 'Sin descripción' }}
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <span class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha
+                                        Inicio</span>
+                                    <span class="block mt-1 text-sm text-gray-900 dark:text-white">
+                                        {{ formatDate(workshop.workshopDateStart) }}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha
+                                        Fin</span>
+                                    <span class="block mt-1 text-sm text-gray-900 dark:text-white">
+                                        {{ formatDate(workshop.workshopDateEnd) }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div *ngIf="workshop.imageUrl && workshop.imageUrl.length > 0">
+                                <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Imágenes del
+                                    Taller</h5>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                    <div *ngFor="let imageUrl of workshop.imageUrl; let i = index"
+                                        class="relative cursor-pointer group" (click)="viewWorkshopImages()">
+                                        <img [src]="processImageUrl(imageUrl)" alt="Imagen del taller"
+                                            class="h-20 w-full object-cover rounded-md transition-all duration-300 group-hover:opacity-90">
+                                        <div
+                                            class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <span
+                                                class="bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">Ver</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-center">
+                                    <button type="button" (click)="viewWorkshopImages()"
+                                        class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center justify-center mx-auto transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        Ver todas las imágenes
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div *ngIf="!workshop.imageUrl || workshop.imageUrl.length === 0"
+                                class="text-center py-4 text-gray-500 dark:text-gray-400">
+                                No hay imágenes disponibles para este taller
+                            </div>
+                        </ng-container>
+                    </div>
+
+                    <!-- Mensaje cuando no hay talleres -->
+                    <div *ngIf="getWorkshops().length === 0"
+                        class="text-center py-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-2" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p class="text-gray-500 dark:text-gray-400">Este reporte no tiene talleres registrados</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" (click)="downloadPdf()"
+                    class="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 dark:hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 sm:w-auto sm:text-sm transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Descargar PDF
+                </button>
+                <button type="button" (click)="closeModal()"
+                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-primary-10 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de visualización de imágenes -->
+<div *ngIf="showImageViewer" class="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="image-viewer" role="dialog"
+    aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center">
+        <!-- Overlay de fondo -->
+        <div class="fixed inset-0 bg-black bg-opacity-90 transition-opacity" aria-hidden="true"
+            (click)="closeImageViewer()"></div>
+
+        <!-- Contenido del visor -->
+        <div class="relative inline-block max-w-3xl w-full z-[110]">
+            <button type="button" (click)="closeImageViewer()" class="absolute top-4 right-4 text-white z-[120]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <div class="relative">
+                <img [src]="currentImages[currentImageIndex]" alt="Imagen del taller" class="max-h-[80vh] mx-auto">
+
+                <!-- Controles de navegación -->
+                <div class="absolute inset-0 flex items-center justify-between">
+                    <button *ngIf="currentImageIndex > 0" type="button" (click)="prevImage()"
+                        class="bg-black bg-opacity-50 text-white rounded-full p-2 ml-4 hover:bg-opacity-70">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button *ngIf="currentImageIndex < currentImages.length - 1" type="button" (click)="nextImage()"
+                        class="bg-black bg-opacity-50 text-white rounded-full p-2 mr-4 hover:bg-opacity-70">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Miniaturas -->
+            <div class="mt-4 flex justify-center space-x-2 overflow-x-auto">
+                <button *ngFor="let image of currentImages; let i = index" type="button" (click)="currentImageIndex = i"
+                    class="h-16 w-16 flex-shrink-0 rounded-md overflow-hidden"
+                    [ngClass]="{'ring-2 ring-blue-500': currentImageIndex === i}">
+                    <img [src]="image" alt="Miniatura" class="h-full w-full object-cover">
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de visualización del cronograma -->
+<div *ngIf="showScheduleViewer" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="schedule-viewer"
+    role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center">
+        <!-- Overlay de fondo -->
+        <div class="fixed inset-0 bg-black bg-opacity-90 transition-opacity" aria-hidden="true"
+            (click)="closeScheduleViewer()"></div>
+
+        <!-- Contenido del visor -->
+        <div class="relative inline-block max-w-3xl w-full">
+            <button type="button" (click)="closeScheduleViewer()" class="absolute top-4 right-4 text-white z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <div class="relative">
+                <img [src]="schedulePreview" alt="Cronograma" class="max-h-[80vh] mx-auto">
+            </div>
+        </div>
+    </div>
+</div>

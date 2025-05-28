@@ -1,0 +1,343 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+            <button
+                class="flex items-center text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                (click)="volverAlDashboard()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                    <path d="m15 18-6-6 6-6"></path>
+                </svg>
+                <span>Volver al Dashboard</span>
+            </button>
+
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Configuración de Cuenta</h1>
+        </div>
+
+        <!-- Tabs -->
+        <div class="mb-8">
+            <div class="sm:hidden">
+                <label for="tabs" class="sr-only">Seleccionar configuración</label>
+                <select id="tabs" name="tabs" [(ngModel)]="activeTab"
+                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 transition-colors">
+                    <option value="email">Cambiar Correo Electrónico</option>
+                    <option value="password">Cambiar Contraseña</option>
+                </select>
+            </div>
+            <div class="hidden sm:block">
+                <div class="border-b border-gray-200 dark:border-gray-700">
+                    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                        <button (click)="setActiveTab('email')"
+                            [ngClass]="{'border-indigo-500 text-indigo-600 dark:text-indigo-400': activeTab === 'email', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600': activeTab !== 'email'}"
+                            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="mr-2">
+                                    <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                                </svg>
+                                Cambiar Correo Electrónico
+                            </div>
+                        </button>
+                        <button (click)="setActiveTab('password')"
+                            [ngClass]="{'border-indigo-500 text-indigo-600 dark:text-indigo-400': activeTab === 'password', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600': activeTab !== 'password'}"
+                            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="mr-2">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                                Cambiar Contraseña
+                            </div>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Change Tab -->
+        <div *ngIf="activeTab === 'email'" [@fadeInOut]
+            class="bg-primary-10 dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden transition-colors duration-200">
+            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="mr-2">
+                        <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                    </svg>
+                    Cambiar Correo Electrónico
+                </h2>
+            </div>
+
+            <div class="p-6">
+                <!-- Success Message -->
+                <div *ngIf="emailSuccess"
+                    class="mb-6 bg-green-50 dark:bg-green-900/30 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded-md relative"
+                    role="alert">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="text-green-500 dark:text-green-400">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">Tu correo electrónico ha sido actualizado correctamente.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form [formGroup]="emailForm" (ngSubmit)="onSubmitEmail()">
+                    <!-- Current Email -->
+                    <div class="mb-6">
+                        <label for="currentEmail"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Correo Electrónico
+                            Actual</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="flex items-center">
+                                <span
+                                    class="inline-flex items-center px-3 py-2 rounded-l-md border border-r-0 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 sm:text-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                                    </svg>
+                                </span>
+                                <input type="email" id="currentEmail" formControlName="currentEmail"
+                                    class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 sm:text-sm transition-colors"
+                                    readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- New Email -->
+                    <div class="mb-6">
+                        <label for="newEmail"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nuevo Correo
+                            Electrónico</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <input type="email" id="newEmail" formControlName="newEmail"
+                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors"
+                                placeholder="Ingresa tu nuevo correo electrónico">
+                        </div>
+                        <div *ngIf="emailForm.get('newEmail')?.touched && emailForm.get('newEmail')?.invalid"
+                            class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            <div *ngIf="emailForm.get('newEmail')?.errors?.['required']">El correo electrónico es
+                                requerido.</div>
+                            <div *ngIf="emailForm.get('newEmail')?.errors?.['email']">Ingresa un correo electrónico
+                                válido.</div>
+                        </div>
+                    </div>
+
+                    <!-- Confirm Email -->
+                    <div class="mb-6">
+                        <label for="confirmEmail"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirmar Correo
+                            Electrónico</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <input type="email" id="confirmEmail" formControlName="confirmEmail"
+                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors"
+                                placeholder="Confirma tu nuevo correo electrónico">
+                        </div>
+                        <div *ngIf="emailForm.get('confirmEmail')?.touched && emailForm.get('confirmEmail')?.invalid"
+                            class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            <div *ngIf="emailForm.get('confirmEmail')?.errors?.['required']">La confirmación del correo
+                                es requerida.</div>
+                            <div *ngIf="emailForm.get('confirmEmail')?.errors?.['email']">Ingresa un correo electrónico
+                                válido.</div>
+                        </div>
+                        <div *ngIf="emailForm.errors?.['emailsNotMatch'] && emailForm.get('confirmEmail')?.touched"
+                            class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            Los correos electrónicos no coinciden.
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end">
+                        <button type="submit" [disabled]="emailForm.invalid || submittingEmail"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
+                            <svg *ngIf="submittingEmail" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            {{ submittingEmail ? 'Actualizando...' : 'Actualizar Correo Electrónico' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Password Change Tab -->
+        <div *ngIf="activeTab === 'password'" [@fadeInOut]
+            class="bg-primary-10 dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden transition-colors duration-200">
+            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="mr-2">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Cambiar Contraseña
+                </h2>
+            </div>
+
+            <div class="p-6">
+                <!-- Success Message -->
+                <div *ngIf="passwordSuccess"
+                    class="mb-6 bg-green-50 dark:bg-green-900/30 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded-md relative"
+                    role="alert">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="text-green-500 dark:text-green-400">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">Tu contraseña ha sido actualizada correctamente.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()">
+                    <!-- New Password -->
+                    <div class="mb-6">
+                        <label for="newPassword"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nueva
+                            Contraseña</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <input [type]="showNewPassword ? 'text' : 'password'" id="newPassword"
+                                formControlName="newPassword"
+                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-10 transition-colors"
+                                placeholder="Ingresa tu nueva contraseña">
+                            <button type="button"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                                (click)="togglePasswordVisibility('new')">
+                                <svg *ngIf="!showNewPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg *ngIf="showNewPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                                    <path
+                                        d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68">
+                                    </path>
+                                    <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61">
+                                    </path>
+                                    <line x1="2" x2="22" y1="2" y2="22"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div *ngIf="passwordForm.get('newPassword')?.touched && passwordForm.get('newPassword')?.invalid"
+                            class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            <div *ngIf="passwordForm.get('newPassword')?.errors?.['required']">La nueva contraseña es
+                                requerida.</div>
+                            <div *ngIf="passwordForm.get('newPassword')?.errors?.['minlength']">Debe tener al menos 6
+                                caracteres.</div>
+                        </div>
+
+                        <!-- Password Strength Indicator -->
+                        <div *ngIf="passwordForm.get('newPassword')?.value" class="mt-2">
+                            <div class="flex items-center">
+                                <span class="text-sm text-gray-500 dark:text-gray-400 mr-2">Seguridad:</span>
+                                <span [ngClass]="getPasswordStrength().color" class="text-sm font-medium">
+                                    {{ getPasswordStrength().text }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="mb-6">
+                        <label for="confirmPassword"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirmar
+                            Contraseña</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword"
+                                formControlName="confirmPassword"
+                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-10 transition-colors"
+                                placeholder="Confirma tu nueva contraseña">
+                            <button type="button"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                                (click)="togglePasswordVisibility('confirm')">
+                                <svg *ngIf="!showConfirmPassword" xmlns="http://www.w3.org/2000/svg" width="16"
+                                    height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg *ngIf="showConfirmPassword" xmlns="http://www.w3.org/2000/svg" width="16"
+                                    height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                                    <path
+                                        d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68">
+                                    </path>
+                                    <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61">
+                                    </path>
+                                    <line x1="2" x2="22" y1="2" y2="22"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div *ngIf="passwordForm.get('confirmPassword')?.touched && passwordForm.get('confirmPassword')?.invalid"
+                            class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            La confirmación es requerida.
+                        </div>
+                        <div *ngIf="passwordForm.errors?.['passwordsNotMatch'] && passwordForm.get('confirmPassword')?.touched"
+                            class="mt-1 text-sm text-red-600 dark:text-red-400">
+                            Las contraseñas no coinciden.
+                        </div>
+                    </div>
+
+                    <!-- Password Tips -->
+                    <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-md">
+                        <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">Consejos para una
+                            contraseña segura:</h3>
+                        <ul class="list-disc pl-5 text-xs text-blue-700 dark:text-blue-400 space-y-1">
+                            <li>Usa al menos 8 caracteres</li>
+                            <li>Incluye letras mayúsculas y minúsculas</li>
+                            <li>Incluye números y símbolos</li>
+                            <li>Evita información personal fácilmente adivinable</li>
+                            <li>No uses la misma contraseña en múltiples sitios</li>
+                        </ul>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end">
+                        <button type="submit" [disabled]="passwordForm.invalid || submittingPassword"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
+                            <svg *ngIf="submittingPassword" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            {{ submittingPassword ? 'Actualizando...' : 'Actualizar Contraseña' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

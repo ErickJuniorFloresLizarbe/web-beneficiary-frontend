@@ -1,0 +1,427 @@
+<div class="container mx-auto px-4 py-6">
+    <!-- Header -->
+    <header class="bg-white shadow mb-4">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h1 class="text-5xl font-extrabold text-blue-500">
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">
+            Gestión de Talleres
+          </span>
+        </h1>
+      </div>
+    </header>
+  
+    <!-- Filtros -->
+    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start mb-4">
+        <h2 class="text-xl font-semibold">Filtros de Busqueda</h2>
+        <button (click)="clearFilters()"
+          class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md flex items-center hover:bg-gray-200 transition-colors mt-2 sm:mt-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Limpiar filtros
+        </button>
+      </div>
+      <div class="flex justify-between gap-4 mb-4">
+        <div class="relative w-4/6">
+          <input type="text" placeholder="Buscar talleres..."
+            class="pl-8 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [(ngModel)]="searchTerm" (input)="onSearch()" />
+          <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-2 top-2.5 h-4 w-4 text-gray-500" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <div class="flex items-center mt-1">
+          <button (click)="toggleActiveStatus('active')"
+            class="px-4 py-2 rounded-l-md font-medium text-sm transition-colors"
+            [ngClass]="activeFilter === 'active' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">Activos</button>
+          <button (click)="toggleActiveStatus('inactive')"
+            class="px-4 py-2 rounded-r-md font-medium text-sm transition-colors"
+            [ngClass]="activeFilter === 'inactive' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">Inactivos</button>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio</label>
+          <div class="relative">
+            <button type="button" (click)="toggleCalendar('start')"
+              class="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-md bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <span class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {{ startDateFilter ? formatDate(startDateFilter) : 'Seleccionar fecha' }}
+              </span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div *ngIf="showStartDateCalendar"
+              class="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-200 p-2">
+              <div class="flex justify-between items-center mb-2">
+                <button type="button" (click)="previousMonth('start')" class="p-1 hover:bg-gray-100 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <div class="font-medium">{{ months[currentStartMonth.getMonth()] }} {{
+                  currentStartMonth.getFullYear() }}</div>
+                <button type="button" (click)="nextMonth('start')" class="p-1 hover:bg-gray-100 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+              <div class="grid grid-cols-7 gap-1 text-center text-xs font-medium text-gray-500">
+                <div *ngFor="let day of weekdays" class="py-1">{{ day }}</div>
+              </div>
+              <div class="grid grid-cols-7 gap-1 mt-1">
+                <button *ngFor="let day of generateCalendarDays(currentStartMonth)" type="button" [disabled]="day === 0"
+                  (click)="selectDate(day, 'start')" class="w-8 h-8 rounded-full flex items-center justify-center text-sm"
+                  [ngClass]="{
+                                  'invisible': day === 0,
+                                  'bg-blue-600 text-white hover:bg-blue-700': isSelectedDate(day, 'start'),
+                                  'hover:bg-blue-100': day !== 0
+                              }">{{ day !== 0 ? day : '' }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Fin</label>
+          <div class="relative">
+            <button type="button" (click)="toggleCalendar('end')"
+              class="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-md bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <span class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {{ endDateFilter ? formatDate(endDateFilter) : 'Seleccionar fecha' }}
+              </span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div *ngIf="showEndDateCalendar"
+              class="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-200 p-2">
+              <div class="flex justify-between items-center mb-2">
+                <button type="button" (click)="previousMonth('end')" class="p-1 hover:bg-gray-100 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <div class="font-medium">{{ months[currentEndMonth.getMonth()] }} {{
+                  currentEndMonth.getFullYear() }}</div>
+                <button type="button" (click)="nextMonth('end')" class="p-1 hover:bg-gray-100 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+              <div class="grid grid-cols-7 gap-1 text-center text-xs font-medium text-gray-500">
+                <div *ngFor="let day of weekdays" class="py-1">{{ day }}</div>
+              </div>
+              <div class="grid grid-cols-7 gap-1 mt-1">
+                <button *ngFor="let day of generateCalendarDays(currentEndMonth)" type="button"
+                  [disabled]="day === 0 || isDateDisabled(day, 'end')" (click)="selectDate(day, 'end')"
+                  class="w-8 h-8 rounded-full flex items-center justify-center text-sm" [ngClass]="{
+                            'invisible': day === 0,
+                            'bg-blue-600 text-white hover:bg-blue-700': isSelectedDate(day, 'end'),
+                            'hover:bg-blue-100': day !== 0 && !isDateDisabled(day, 'end'),
+                            'text-gray-300 cursor-not-allowed': isDateDisabled(day, 'end')
+                            }">{{ day !== 0 ? day : '' }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Tabla de Talleres -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="p-4 border-b flex justify-between items-center">
+        <h2 class="text-xl font-semibold">Listado de Reportes</h2>
+        <div class="flex space-x-2">
+          <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md flex items-center hover:bg-gray-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Actualizar
+          </button>
+          <button (click)="openNewWorkshopModal()"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md flex items-center hover:bg-blue-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Nuevo taller
+          </button>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table
+          class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm text-left rtl:text-right text-gray-950 dark:text-gray-200">
+          <thead class="text-xs uppercase bg-gray-800 dark:bg-gray-900 text-white">
+            <tr>
+              <th class="px-3 py-3 text-left text-xs font-medium text-stone-50 uppercase tracking-wider">
+                Nombre</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-stone-50 uppercase tracking-wider">
+                Descripción</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-stone-50 uppercase tracking-wider">Fecha
+                de Inicio</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-stone-50 uppercase tracking-wider">Fecha
+                de Fin</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-stone-50 uppercase tracking-wider">
+                Personas</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-stone-50 uppercase tracking-wider">
+                Observaciones</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-stone-50 uppercase tracking-wider">
+                Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <ng-container *ngIf="paginatedWorkshops.length > 0; else noWorkshops">
+              <tr *ngFor="let workshop of paginatedWorkshops" class="hover:bg-blue-50 transition-colors duration-150">
+                <td class="px-3 py-4 text-sm text-gray-800 font-medium" [title]="workshop.name">
+                  {{ workshop.name }}
+                </td>
+                <td class="px-3 py-4 text-xs text-gray-800 font-medium" [title]="workshop.description">
+                  {{ workshop.description || 'Sin descripción' }}
+                </td>
+                <td class="px-3 py-4 text-xs text-gray-800 font-medium" [title]="formatDate(workshop.dateStart)">
+                  {{ formatDate(workshop.dateStart) }}
+                </td>
+                <td class="px-3 py-4 text-xs text-gray-800 font-medium" [title]="formatDate(workshop.dateEnd)">
+                  {{ formatDate(workshop.dateEnd) }}
+                </td>
+                <td class="px-3 py-4 text-xs text-gray-800 font-medium whitespace-normal break-words max-w-[490px]">
+                  <ng-container *ngIf="getPersonFullNames(workshop.personId) !== 'Sin asignar'; else noPersons">
+                    {{ getPersonFullNames(workshop.personId) }}
+                  </ng-container>
+                  <ng-template #noPersons>Sin personas</ng-template>
+                </td>
+                <td class="px-3 py-4 text-xs text-gray-800 font-medium"
+                  [title]="workshop.observation">
+                  {{ workshop.observation }}
+                </td>
+  
+  
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div class="flex justify-end gap-2">
+                    <ng-container *ngIf="workshop.active">
+                      <button (click)="openViewModal(workshop)"
+                        class="text-blue-600 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 p-1.5 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </button>
+                      <button (click)="openEditWorkshopModal(workshop)"
+                        class="text-indigo-600 hover:text-indigo-900 bg-indigo-100 hover:bg-indigo-200 p-1.5 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button (click)="openDeleteDialog(workshop)"
+                        class="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 p-1.5 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </ng-container>
+                    <ng-container *ngIf="!workshop.active">
+                      <button (click)="restoreWorkshop(workshop)"
+                        class="text-green-600 hover:text-green-900 bg-green-100 hover:bg-green-200 p-1.5 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                      </button>
+                      <button (click)="openPermanentDeleteDialog(workshop)"
+                        class="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 p-1.5 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </ng-container>
+                  </div>
+                </td>
+              </tr>
+  
+            </ng-container>
+            <ng-template #noWorkshops>
+              <tr>
+                <td colspan="5" class="px-6 py-10 text-center text-gray-500">
+                  No hay talleres {{ activeFilter === 'active' ? 'activos' : 'inactivos' }} disponibles.
+                </td>
+              </tr>
+            </ng-template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <!-- Paginación -->
+    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
+      *ngIf="totalPages > 1">
+      <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm text-gray-700">
+            Mostrando <span class="font-medium">{{ getStartIndex() }}</span> a <span class="font-medium">{{
+              getEndIndex() }}</span> de <span class="font-medium">{{ filteredWorkshops.length }}</span>
+            resultados
+          </p>
+        </div>
+        <div>
+          <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"
+              [ngClass]="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }"
+              class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+              <span class="sr-only">Anterior</span>
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+            <ng-container *ngFor="let page of pages">
+              <button (click)="goToPage(page)" [ngClass]="{
+                              'bg-blue-50 border-blue-500 text-blue-600 z-10': currentPage === page,
+                              'bg-white border-gray-300 text-gray-500 hover:bg-gray-50': currentPage !== page
+                          }" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium">{{ page
+                }}</button>
+            </ng-container>
+            <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
+              [ngClass]="{ 'opacity-50 cursor-not-allowed': currentPage === totalPages }"
+              class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+              <span class="sr-only">Siguiente</span>
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+          </nav>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Modal de Formulario de Taller -->
+    <app-workshop-modal *ngIf="isFormModalOpen" [workshop]="selectedWorkshop" (close)="closeModal()"
+      (save)="loadWorkshops()"></app-workshop-modal>
+  </div>
+  
+  <div *ngIf="isViewModalOpen"
+    class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn"
+    (click)="closeViewModal()">
+    <div
+      class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-0 w-full max-w-lg relative transform transition-all duration-300 ease-in-out animate-scaleIn"
+      (click)="$event.stopPropagation()">
+  
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 rounded-t-xl">
+        <h2 class="text-2xl font-bold text-white">Detalle del Taller</h2>
+        <button (click)="closeViewModal()"
+          class="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+  
+      <!-- Content -->
+      <div class="p-6">
+        <div class="space-y-4">
+          <!-- Name -->
+          <div>
+            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Nombre</h3>
+            <p class="text-lg font-semibold text-gray-900 dark:text-black">{{ viewedWorkshop?.name }}</p>
+          </div>
+  
+          <!-- Description -->
+          <div>
+            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Descripción</h3>
+            <div class="mt-1 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 max-h-40 overflow-y-auto">
+              <p class="text-gray-700 dark:text-gray-200 whitespace-pre-line">
+                {{ viewedWorkshop?.description || 'Sin descripción disponible' }}
+              </p>
+            </div>
+          </div>
+  
+          <div>
+            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Observación</h3>
+            <div class="mt-1 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 max-h-40 overflow-y-auto">
+              <p class="text-gray-700 dark:text-gray-200 whitespace-pre-line">
+                {{ viewedWorkshop?.observation || 'Sin observación disponible' }}
+              </p>
+            </div>
+          </div>
+          <!-- Dates -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Fecha de Inicio</h3>
+              <div class="flex items-center mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="text-blue-500 mr-2">
+                  <rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>
+                  <line x1="16" x2="16" y1="2" y2="6"></line>
+                  <line x1="8" x2="8" y1="2" y2="6"></line>
+                  <line x1="3" x2="21" y1="10" y2="10"></line>
+                </svg>
+                <p class="text-gray-700 dark:text-gray-900">{{ formatDate(viewedWorkshop?.dateStart) }}</p>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Fecha de Fin</h3>
+              <div class="flex items-center mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="text-blue-500 mr-2">
+                  <rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>
+                  <line x1="16" x2="16" y1="2" y2="6"></line>
+                  <line x1="8" x2="8" y1="2" y2="6"></line>
+                  <line x1="3" x2="21" y1="10" y2="10"></line>
+                </svg>
+                <p class="text-gray-700 dark:text-gray-900">{{ formatDate(viewedWorkshop?.dateEnd) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Footer -->
+      <div class="bg-gray-50 dark:bg-gray-200/30 px-6 py-4 rounded-b-xl flex justify-end">
+        <button (click)="closeViewModal()"
+          class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-5 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center">
+          <span>Cerrar</span>
+        </button>
+      </div>
+    </div>
+  </div>

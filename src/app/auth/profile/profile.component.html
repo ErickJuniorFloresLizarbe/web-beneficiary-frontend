@@ -1,0 +1,237 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+            <button
+                class="flex items-center text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                (click)="volverAlDashboard()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                    <path d="m15 18-6-6 6-6"></path>
+                </svg>
+                <span>Volver al Dashboard</span>
+            </button>
+
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Mi Perfil</h1>
+
+            <button [disabled]="isSaving"
+                class="inline-flex items-center px-4 py-2 rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                (click)="toggleEditMode()">
+                <svg *ngIf="!editMode" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="mr-2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                <svg *ngIf="editMode && !isSaving" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="mr-2">
+                    <path d="M20 6 9 17l-5-5"></path>
+                </svg>
+                <svg *ngIf="isSaving" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                </svg>
+                {{ editMode ? (isSaving ? 'Guardando...' : 'Guardar Cambios') : 'Editar Perfil' }}
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="flex justify-center items-center py-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+        </div>
+
+        <!-- Profile Content -->
+        <div *ngIf="!loading"
+            class="bg-primary-10 dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transition-all duration-200">
+            <!-- Cover Image -->
+            <div class="h-32 sm:h-48 bg-gradient-to-r from-indigo-500 to-purple-600 relative">
+                <!-- Role Badge -->
+                <div class="absolute top-4 right-4">
+                    <span [ngClass]="getRoleClass()" class="px-3 py-1 rounded-full text-xs font-medium">
+                        {{ getRoleName() }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Profile Info -->
+            <div class="relative px-4 sm:px-6 pb-6">
+                <!-- Profile Image -->
+                <div class="relative -mt-16 mb-6 flex justify-center">
+                    <div class="relative">
+                        <div
+                            class="w-32 h-32 rounded-full border-4 border-white dark:border-gray-800 overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-lg">
+                            <img [src]="editMode ? editableProfile.profileImage : profile.profileImage"
+                                alt="Foto de perfil" class="w-full h-full object-cover" (error)="onImageError($event)">
+
+                        </div>
+                        <div *ngIf="editMode"
+                            class="absolute bottom-0 right-0 bg-indigo-600 rounded-full p-2 cursor-pointer shadow-lg hover:bg-indigo-700 transition-colors">
+                            <label for="profile-image" class="cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="text-white">
+                                    <path
+                                        d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                                    </path>
+                                    <circle cx="12" cy="13" r="4"></circle>
+                                </svg>
+                            </label>
+                            <input type="file" id="profile-image" class="hidden" accept="image/*"
+                                (change)="onFileSelected($event)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="flex border-b border-gray-200 dark:border-gray-700 mb-6">
+                    <button
+                        [ngClass]="{'border-indigo-500 text-indigo-600 dark:text-indigo-400': activeTab === 'personal', 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300': activeTab !== 'personal'}"
+                        class="py-4 px-1 border-b-2 font-medium text-sm sm:text-base transition-colors"
+                        (click)="setActiveTab('personal')">
+                        Información Personal
+                    </button>
+                    <button
+                        [ngClass]="{'border-indigo-500 text-indigo-600 dark:text-indigo-400': activeTab === 'account', 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300': activeTab !== 'account'}"
+                        class="ml-8 py-4 px-1 border-b-2 font-medium text-sm sm:text-base transition-colors"
+                        (click)="setActiveTab('account')">
+                        Cuenta
+                    </button>
+                </div>
+
+                <!-- Personal Information Tab -->
+                <div *ngIf="activeTab === 'personal'" [@fadeInOut]>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Name -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
+                            <div *ngIf="!editMode" class="text-lg font-medium text-gray-900 dark:text-white">{{
+                                profile.name || 'No especificado' }}</div>
+                            <div *ngIf="editMode" class="relative rounded-md shadow-sm">
+                                <input type="text" [(ngModel)]="editableProfile.name"
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition-colors"
+                                    placeholder="Tu nombre">
+                            </div>
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Apellido</label>
+                            <div *ngIf="!editMode" class="text-lg font-medium text-gray-900 dark:text-white">{{
+                                profile.lastName || 'No especificado' }}</div>
+                            <div *ngIf="editMode" class="relative rounded-md shadow-sm">
+                                <input type="text" [(ngModel)]="editableProfile.lastName"
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition-colors"
+                                    placeholder="Tu apellido">
+                            </div>
+                        </div>
+
+                        <!-- Document Type -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de
+                                Documento</label>
+                            <div *ngIf="!editMode" class="text-lg font-medium text-gray-900 dark:text-white">{{
+                                profile.documentType || 'No especificado' }}</div>
+                            <div *ngIf="editMode" class="relative rounded-md shadow-sm">
+                                <select [(ngModel)]="editableProfile.documentType"
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition-colors">
+                                    <option *ngFor="let type of documentTypes" [value]="type">{{ type }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Document Number -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Número de
+                                Documento</label>
+                            <div *ngIf="!editMode" class="text-lg font-medium text-gray-900 dark:text-white">{{
+                                profile.documentNumber || 'No especificado' }}</div>
+                            <div *ngIf="editMode" class="relative rounded-md shadow-sm">
+                                <input type="text" [(ngModel)]="editableProfile.documentNumber"
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition-colors"
+                                    placeholder="Tu número de documento">
+                            </div>
+                        </div>
+
+                        <!-- Cell Phone -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono
+                                Celular</label>
+                            <div *ngIf="!editMode" class="text-lg font-medium text-gray-900 dark:text-white">{{
+                                profile.cellPhone || 'No especificado' }}</div>
+                            <div *ngIf="editMode" class="relative rounded-md shadow-sm">
+                                <input type="tel" [(ngModel)]="editableProfile.cellPhone"
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition-colors"
+                                    placeholder="Tu número de teléfono">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Information Tab -->
+                <div *ngIf="activeTab === 'account'" [@fadeInOut]>
+                    <div class="space-y-6">
+                        <!-- Email -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                            <div class="flex items-center">
+                                <div class="text-lg font-medium text-gray-900 dark:text-white mr-2">{{ profile.email }}
+                                </div>
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                    Verificado
+                                </span>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                Para cambiar tu correo electrónico, ve a la sección de Configuración.
+                            </p>
+                        </div>
+
+                        <!-- Role -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Rol</label>
+                            <div class="flex items-center">
+                                <span [ngClass]="getRoleClass()"
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium">
+                                    {{ getRoleName() }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Account Actions -->
+                        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Acciones de cuenta</h3>
+
+                            <div class="space-y-4">
+                                <a [routerLink]="['/configuracion']"
+                                    class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-primary-10 dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="mr-2">
+                                        <path
+                                            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+                                        </path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    Configuración de cuenta
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cancel Button (only in edit mode) -->
+                <div *ngIf="editMode" class="mt-8 flex justify-end">
+                    <button
+                        class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-primary-10 dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                        (click)="cancelEdit()">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

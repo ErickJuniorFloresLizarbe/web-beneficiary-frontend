@@ -1,0 +1,43 @@
+/* Estilos para el sidebar colapsado */
+.sidebar-collapsed-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+/* Animaciones para el sidebar */
+.sidebar-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Estilos para los iconos en el sidebar colapsado */
+.sidebar-icon {
+  transition: all 0.2s ease;
+}
+
+.sidebar-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Estilos para el menú móvil */
+.mobile-menu-overlay {
+  backdrop-filter: blur(2px);
+}
+
+/* Animación para el menú móvil */
+@keyframes slideIn {
+  from {
+      transform: translateX(-100%);
+  }
+
+  to {
+      transform: translateX(0);
+  }
+}
+
+.mobile-menu-animate {
+  animation: slideIn 0.3s ease-out;
+}

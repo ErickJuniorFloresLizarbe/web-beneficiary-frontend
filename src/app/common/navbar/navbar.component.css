@@ -1,0 +1,54 @@
+/* Añadir animación al menú desplegable */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Estilos para el avatar */
+.rounded-full {
+  transition: all 0.2s ease;
+}
+
+button:hover .rounded-full {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4);
+}
+
+/* Estilos para truncar texto */
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Transiciones suaves */
+.transition-colors {
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.transition-transform {
+  transition: transform 0.2s;
+}
+
+/* Estilos para el menú móvil */
+@media (max-width: 768px) {
+  .md\:hidden {
+    border-top: 1px solid rgba(229, 231, 235, 0.5);
+  }
+
+  .dark .md\:hidden {
+    border-top: 1px solid rgba(55, 65, 81, 0.5);
+  }
+}

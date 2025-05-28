@@ -1,0 +1,77 @@
+/* Estilos adicionales para el componente de perfil */
+
+/* Animación para el botón de guardar */
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Mejoras para inputs en modo oscuro */
+input.dark:focus,
+select.dark:focus {
+    border-color: rgba(79, 70, 229, 0.5);
+}
+
+/* Transiciones suaves */
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+/* Mejoras para la imagen de perfil */
+.profile-image-container {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-image-container:hover .profile-image-overlay {
+    opacity: 1;
+}
+
+.profile-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 9999px;
+}
+
+/* Estilos para pestañas */
+.tab-active {
+    color: #4F46E5;
+    border-bottom-color: #4F46E5;
+}
+
+/* Mejoras para dispositivos móviles */
+@media (max-width: 640px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .profile-header-actions {
+        margin-top: 1rem;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+}

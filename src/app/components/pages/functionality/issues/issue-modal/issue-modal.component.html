@@ -1,0 +1,43 @@
+ <!-- Modal -->
+ <div *ngIf="isModalOpen" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+  <div class="bg-white p-6 rounded-lg w-96">
+    <h2 class="text-2xl font-bold mb-4">
+      {{ isEditMode ? 'Editar Tema' : 'Agregar Tema' }}
+    </h2>
+    <form (ngSubmit)="isEditMode ? updateSupplier() : addIssue()">
+      <div class="mb-4">
+        <label class="block text-lg font-semibold" for="company">Nombre</label>
+        <input class="border p-2 w-full rounded" id="company" [(ngModel)]="issueForm.name" name="company" required />
+      </div>
+      <div class="mb-4">
+        <label class="block text-lg font-semibold" for="workshopId">Taller</label>
+        <select class="border p-2 w-full rounded" id="workshopId" [(ngModel)]="issueForm.workshopId" name="workshopId"
+          required>
+          <option *ngFor="let workshop of workshops" [value]="workshop.id">
+            {{ workshop.name }}
+          </option>
+        </select>
+
+      </div>
+      <!-- Campo para hora programada -->
+      <div class="mb-4">
+        <label class="block text-lg font-semibold" for="scheduledTime">Hora Programada</label>
+        <input class="border p-2 w-full rounded" id="scheduledTime" [(ngModel)]="issueForm.scheduledTime"
+          name="scheduledTime" type="datetime-local" [min]="getCurrentDateTime()" required
+          (input)="validateDateTime($event)" />
+        <!-- Mensaje de error -->
+        <div *ngIf="dateError" class="text-red-500 text-sm mt-1">
+          La fecha y hora seleccionada no puede ser anterior a la fecha actual.
+        </div>
+      </div>
+
+      <div class="flex justify-end">
+        <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+          (click)="closeModal()">Cancelar</button>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
+          {{ isEditMode ? 'Actualizar' : 'Agregar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

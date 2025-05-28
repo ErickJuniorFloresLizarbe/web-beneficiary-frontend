@@ -1,0 +1,565 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+<style>
+  /* MUESTRA (...) CUANDO LA INFORMACION EXEDE DE COLUMNA */
+  .truncate-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+  }
+
+  .icon-benef{
+    font-size:17px; /* dimensione grande e leggibile */
+    color: #646d7a; /* colore amichevole, verde */
+  }
+
+  .icon-apadr{
+    font-size:17px; /* dimensione grande e leggibile */
+    color: #609ce9; /* colore amichevole, verde */
+  }
+  
+  .font-text{
+    font-family: 'Roboto', sans-serif;
+  }
+  
+
+</style>
+
+<div class="container mx-auto p-4">
+
+  <!-- TITULO DEL APARTADO -->
+  <nav class="navbar navbar-light bg-white mb-4 rounded-lg shadow-md ">
+    <div class="container">
+      <span class="navbar-brand text-lg font-semibold text-gray-700 ml-2">Listado de los Beneficiarios</span>
+      <!-- <button class="btn btn-outline-secondary"> <i class="bi bi-box-arrow-in-right"></i> Registar</button> -->
+    </div>
+  </nav>
+
+  <app-form-edit [isModalVisible]="isModalVisible" [selectedEducation]="selectedEducation"
+    (closeModalEvent)="closeModal()" (saveEducationEvent)="saveEducation($event)">
+
+  </app-form-edit>
+
+  <app-form-edit [isHealthModalVisible]="isHealthModalVisible" [selectedHealth]="selectedHealth"
+    (closeHealthModalEvent)="closeHealthModal()" (saveHealthEvent)="saveHealthChanges($event)">
+  </app-form-edit>
+
+
+  <!-- LISTA LA TABLA DE BENEFICIARIOS Y APADRINADOS ( A - I) -->
+  <div class="bg-white shadow-md rounded-lg p-4">
+    <!-- Header con los switches de estado -->
+    <div class="flex justify-between items-center border-b pb-2 mb-4">
+
+      <input type="text" [(ngModel)]="searchTerm" (input)="filtrarBeneficiarios()" placeholder="Buscar..."
+        class="border p-1 rounded text-gray-700" />
+
+      <div class="flex space-x-4  py-2">
+        <!-- Estado Activo/Inactivo -->
+        <div (click)="cambiarEstado()" class="flex items-center cursor-pointer">
+          <div class="w-10 h-6 bg-gray-400 rounded-full p-1 relative transition-all duration-300">
+            <div class="w-4 h-4 bg-white rounded-full absolute transition-all duration-300"
+              [ngClass]="estadoActual === 'I' ? 'translate-x-4 bg-blue-500' : 'translate-x-0 bg-gray-300'">
+            </div>
+          </div>
+          <span class="ml-2 text-gray-700">{{ estadoActual === 'A' ? 'Activos' : 'Inactivos' }}</span>
+        </div>
+
+        <!-- Estado Apadrinamiento -->
+        <div (click)="cambiarApadrinamiento()" class="flex items-center cursor-pointer">
+          <div class="w-10 h-6 bg-gray-400 rounded-full p-1 relative transition-all duration-300">
+            <div class="w-4 h-4 bg-white rounded-full absolute transition-all duration-300"
+              [ngClass]="estadoApadrinamiento === 'SI' ? 'translate-x-4' : 'translate-x-0'">
+            </div>
+          </div>
+          <span class="ml-2 text-gray-700">{{ estadoApadrinamiento === 'NO' ? 'Beneficiarios' : 'Apadrinados' }}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="bg-white shadow-md rounded-lg p-4 ">
+      <div class="overflow-x-auto">
+
+        <!-- LISTA LA TABLA DE BENEFICIARIOS Y APADRINADOS ( A - I) -->
+        <!-- Encabezado -->
+        <div class="hidden sm:grid grid-cols-8 bg-gray-100 text-gray-700 font-semibold text-base font-text px-4 py-2 border border-gray-300 rounded-t-md mb-2">
+          <div>Nombres</div>
+          <div>Apellidos</div>
+          <div class="text-center">Edad</div>
+          <div>Nacimiento</div>
+          <div class="text-center">Tipo Doc</div>
+          <div>Número Doc</div>
+          <div class="text-center">Patrocinado</div>
+          <div class="text-center">Acciones</div>
+        </div>
+
+        <!-- Contenido tipo tarjetas -->
+        <div class="space-y-2">
+          <div *ngFor="let beneficiario of beneficiariosFiltrados"
+              class="grid grid-cols-1 sm:grid-cols-8 bg-white border border-gray-200 rounded-md shadow-sm px-4 py-3 text-base font-text items-center gap-y-2 sm:gap-0 ">
+
+            <div>{{ beneficiario.name }}</div>
+            <div>{{ beneficiario.surname }}</div>
+            <div class="text-center">{{ beneficiario.age }}</div>
+            <div>{{ formatBirthdate(beneficiario.birthdate) }}</div>
+            <div class="text-center">{{ beneficiario.typeDocument }}</div>
+            <div>{{beneficiario.documentNumber }}</div>
+            <div class="text-center">
+              <i [ngClass]="beneficiario.sponsored === 'SI' ? 'fa-solid fa-hand-holding-heart icon-apadr' : 'fa-solid fa-house-user icon-benef'"></i>
+            </div>
+
+            <!-- Acciones -->
+            <div class="flex justify-start sm:justify-center gap-2">
+              <button (click)="toggleEstado(beneficiario)"
+                [ngClass]="beneficiario.state === 'A' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'"
+                class="text-white rounded px-2 py-1 text-xs">
+                <i [ngClass]="beneficiario.state === 'A' ? 'fas fa-trash' : 'fas fa-undo'"></i>
+              </button>
+
+              <button class="text-white bg-gray-500 hover:bg-gray-600 rounded px-2 py-1 text-xs"
+                (click)="beneficiario?.idPerson ? descargarPdf(beneficiario.idPerson) : null">
+                <i class="fas fa-file-pdf"></i>
+              </button>
+
+              <button class="text-white bg-gray-500 hover:bg-gray-600 rounded px-2 py-1 text-xs"
+                (click)="verDetalles(beneficiario.idPerson)">
+                <i class="fas fa-eye"></i>
+              </button>
+
+              <div class="dropdown">
+                <button class="btn btn-sm btn-primary dropdown-toggle px-2 py-1 text-xs" type="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <ul class="dropdown-menu text-sm">
+                  <li><a class="dropdown-item" (click)="editarBeneficiario(beneficiario)">
+                    <i class="fas fa-user-edit me-2"></i>Beneficiario</a></li>
+                  <li><a class="dropdown-item" (click)="openModal(beneficiario)">
+                    <i class="fas fa-graduation-cap me-2"></i>Educación</a></li>
+                  <li><a class="dropdown-item" (click)="openHealthModal(beneficiario)">
+                    <i class="fas fa-briefcase-medical me-2"></i>Salud</a></li>
+                  
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+
+        <div class="flex justify-between items-center mt-4 text-sm">
+          <!-- Selector de cantidad -->
+          <div>
+            <label>Cantidad por página:</label>
+            <select [(ngModel)]="itemsPerPage" (change)="cambiarItemsPorPagina(itemsPerPage)" class="border px-3 py-1 rounded ml-4">
+              <option [value]="10">10</option>
+              <option [value]="15">15</option>
+              <option [value]="20">20</option>
+            </select>
+          </div>
+        
+          <!-- Controles de paginación -->
+          <div class="space-x-2">
+            <button (click)="cambiarPagina(currentPage - 1)" [disabled]="currentPage === 1" class="px-3 py-1 bg-gray-200 rounded">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <span>Página {{ currentPage }} de {{ totalPages }}</span>
+            <button (click)="cambiarPagina(currentPage + 1)" [disabled]="currentPage === totalPages" class="px-3 py-1 bg-gray-200 rounded">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE VISTA PREVIA -- MUESTRA DATOS PERSON, EDUCATION Y HEALTH -->
+  <div *ngIf="showBeneficiarioDetails && selectedBeneficiario && !isEditing"
+    class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-7xl h-5/6 overflow-hidden flex flex-col">
+      <h2 class="text-lg font-semibold text-gray-800 font-text mb-3">Detalles del Beneficiario</h2>
+
+      <div class="overflow-y-auto flex-grow p-2 bg-gray-100">
+
+        <div class="w-full mx-auto bg-white border border-gray-200 rounded-lg shadow-md p-3 mb-3">
+          <!-- Tabla Person -->
+          <h3 class="text-lg font-semibold text-gray-800 mb-3 border-b-2 border-gray-300 pb-1">
+            Datos Personales
+          </h3>
+
+          <table class="w-full table-auto border-collapse">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="border-b px-2 py-1 text-left font-semibold">Nombres</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Apellido</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Edad</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Fecha de Nacimiento</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Documento</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Apadrinado</th>
+                <th class="border-b px-2 py-1 text-center font-semibold">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="selectedBeneficiario" class="hover:bg-gray-100 transition duration-300 font-text">
+                <td class="border-b px-2 py-1">{{ selectedBeneficiario.name }}</td>
+                <td class="border-b px-2 py-1">{{ selectedBeneficiario.surname }}</td>
+                <td class="border-b px-2 py-1">{{ selectedBeneficiario.age }}</td>
+                <td class="border-b px-2 py-1">{{ formatBirthdate(selectedBeneficiario.birthdate) }}</td>
+                <td class="border-b px-2 py-1">{{ selectedBeneficiario.documentNumber }}</td>
+                <td class="border-b px-2 py-1">{{ selectedBeneficiario.sponsored }}</td>
+                <td class="border-b px-2 py-1 text-center">
+                  <button class="px-2 py-1 text-white bg-blue-400 hover:bg-blue-500 rounded transition duration-300"
+                    (click)="editarBeneficiario(selectedBeneficiario)">
+                    <i class="fas fa-sync-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="w-full mx-auto bg-white border border-gray-200 rounded-lg shadow-md p-3 mb-3">
+          <!-- Tabla Education -->
+          <h3 class="text-lg font-semibold text-gray-800 mb-3 border-b-2 border-gray-300 pb-1">
+            Datos de Educación
+          </h3>
+          <table class="w-full border-collapse table-auto">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="border-b px-2 py-1 text-left font-semibold">Institución</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Nivel de Estudio</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Grado</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Promedio</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Cuaderno Completo</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Asistencia</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Tutorías</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Fecha Editada</th>
+                <th class="border-b px-2 py-1 text-center font-semibold">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let edu of selectedBeneficiario.education" class="hover:bg-gray-100 transition duration-300 font-text">
+                <td class="border-b px-2 py-1">{{ edu.schollName }}</td>
+                <td class="border-b px-2 py-1">{{ edu.degreeStudy }}</td>
+                <td class="border-b px-2 py-1">{{ edu.gradeBook }}</td>
+                <td class="border-b px-2 py-1">{{ edu.gradeAverage }}</td>
+                <td class="border-b px-2 py-1">{{ edu.fullNotebook }}</td>
+                <td class="border-b px-2 py-1">{{ edu.assistance }}</td>
+                <td class="border-b px-2 py-1">{{ edu.tutorials }}</td>
+                <td class="border-b px-2 py-1">{{ formatBirthdate(edu.entryDate) }}</td>
+                <td class="border-b px-2 py-1 text-center">
+                  <button class="px-2 py-1 text-white bg-blue-400 hover:bg-blue-500 rounded transition duration-300"
+                    (click)="editarEducacion(edu)">
+                    <i class="fas fa-sync-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="w-full mx-auto bg-white border border-gray-200 rounded-lg shadow-md p-3 mb-3">
+          <!-- Tabla Health -->
+          <h3 class="text-lg font-semibold text-gray-800 mb-3 border-b-2 border-gray-300 pb-1">
+            Datos de Salud
+          </h3>
+          <table class="w-full borderw-full border-collapse table-auto">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="border-b px-2 py-1 text-left font-semibold">Vacuna</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">VPH</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Influenza</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Desparasitación</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Hemoglobina</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Condición de salud</th>
+                <th class="border-b px-2 py-1 text-left font-semibold">Fecha editada</th>
+                <th class="border-b px-2 py-1 text-center font-semibold">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let health of selectedBeneficiario.health" class="hover:bg-gray-100 transition duration-300 font-text">
+                <td class="border-b px-2 py-1">{{ health.vaccine }}</td>
+                <td class="border-b px-2 py-1">{{ health.vph }}</td>
+                <td class="border-b px-2 py-1">{{ health.influenza }}</td>
+                <td class="border-b px-2 py-1">{{ health.deworming }}</td>
+                <td class="border-b px-2 py-1">{{ health.hemoglobin }}</td>
+                <td class="border-b px-2 py-1">{{ health.condicionBeneficiary }}</td>
+                <td class="border-b px-2 py-1">{{ formatBirthdate(health.applicationDate) }}</td>
+                
+                <td class="border-b px-2 py-1 text-center">
+                  <!-- Botón de editar -->
+                  <button class="px-2 py-1 text-white bg-blue-400 hover:bg-blue-500 rounded transition duration-300"
+                    (click)="editarSalud(health)">
+                    <i class="fas fa-sync-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Botón de cierre -->
+      <div class="flex justify-end mt-4">
+        <button class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" (click)="cerrarModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL DE EDICION DE PERSON SIN GENERAR NUEVO ID -->
+  <div *ngIf="selectedBeneficiario && isEditing"
+    class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto">
+      <h2 class="text-lg font-semibold mb-4">Editar Beneficiario</h2>
+
+      <form (ngSubmit)="guardarCambios()">
+        <div class="grid grid-cols-2 gap-4 p-4 bg-gray-100 rounded shadow-sm">
+          <!-- Cada campo con espacio y estilo uniforme -->
+          <div class="mb-2">
+            <label for="nombre" class="form-label text-muted d-flex align-items-center mb-1">
+              <i class="fas fa-user ml-2 me-2"></i> Nombre
+            </label>
+            <input type="text" id="nombre" name="name" [(ngModel)]="selectedBeneficiario.name"
+              class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+              placeholder="Ingresa tu nombre" required>
+          </div>
+          <div class="mb-2">
+            <label for="apellidos" class="form-label text-muted d-flex align-items-center mb-1">
+              <i class="fas fa-user ml-2 me-2"></i> Apellidos
+            </label>
+            <input type="text" id="apellidos" name="surname" [(ngModel)]="selectedBeneficiario.surname"
+              class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+              placeholder="Ingresa tus apellidos" required>
+          </div>
+          <div class="mb-2">
+            <label for="edad" class="form-label text-muted d-flex align-items-center mb-1">
+              <i class="fas fa-calendar-alt ml-2 me-2"></i> Edad
+            </label>
+            <input type="number" id="edad" name="age" [(ngModel)]="selectedBeneficiario.age"
+              class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300" required>
+          </div>
+          <div class="mb-2">
+            <label for="fechaNacimiento" class="form-label text-muted d-flex align-items-center mb-1">
+              <i class="fas fa-calendar ml-2 me-2"></i> Fecha de Nacimiento
+            </label>
+            <input type="date" id="fechaNacimiento" name="birthdate" [(ngModel)]="selectedBeneficiario.birthdate"
+              class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300" required>
+          </div>
+          <div class="mb-2">
+            <label for="tipoDocumento" class="form-label text-muted d-flex align-items-center mb-1">
+              <i class="fas fa-id-card ml-2 me-2"></i> Tipo de Documento
+            </label>
+            <select id="tipoDocumento" name="typeDocument" [(ngModel)]="selectedBeneficiario.typeDocument"
+              class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300" required>
+              <option value="DNI">DNI</option>
+              <option value="CNE">CNE</option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label for="numeroDocumento" class="form-label text-muted d-flex align-items-center mb-1">
+              <i class="fas fa-file-alt ml-2 me-2"></i> Número de Documento
+            </label>
+            <input type="text" id="numeroDocumento" name="documentNumber" [(ngModel)]="selectedBeneficiario.documentNumber"
+              class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300" required>
+          </div>
+          <div class="mb-2">
+            <label for="parentesco" class="form-label text-muted d-flex align-items-center mb-1">
+              <i class="fas fa-users ml-2 me-2"></i> Parentesco
+            </label>
+            <input type="text" id="parentesco" name="typeKinship" [(ngModel)]="selectedBeneficiario.typeKinship"
+              class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300" required>
+          </div>
+          <div class="mb-2">
+            <label for="apadrinado" class="form-label text-muted d-flex align-items-center mb-1">
+              <i class="fas fa-hand-holding-heart ml-2 me-2"></i> Apadrinado
+            </label>
+            <select id="apadrinado" name="sponsored" [(ngModel)]="selectedBeneficiario.sponsored" class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300" required>
+              <option value="SI">Sí</option>
+              <option value="NO">No</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="flex justify-end mt-4">
+          <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded mr-2"
+            (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+            Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL DE EDICION DE EDUCATION SIN GENERAR NUEVO ID -> DENTRO DE VISTA PREVIA -->
+  <div *ngIf="isEditingEducation" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+    <div class="bg-white p-6 rounded shadow-lg  w-1/2 max-h-[80vh] overflow-y-auto">
+      <h2 class="text-lg font-bold mb-4">Editar Educación</h2>
+
+      <div class="grid grid-cols-2 gap-4 p-4 bg-gray-100 rounded shadow-sm">
+        <div class="mb-2">
+          <label for="institucionEducativa" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-school ml-2 me-2"></i> Institución Educativa
+          </label>
+          <input type="text" id="institucionEducativa" [(ngModel)]="selectedEducation.schollName"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2" />
+        </div>
+        <div class="mb-2">
+          <label for="nivelEstudio" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-graduation-cap ml-2 me-2"></i> Nivel de Estudio
+          </label>
+          <input type="text" id="nivelEstudio" [(ngModel)]="selectedEducation.degreeStudy"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2" />
+        </div>
+        <div class="mb-2">
+          <label for="grado" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-book ml-2 me-2"></i> Grado
+          </label>
+          <input type="text" id="grado" [(ngModel)]="selectedEducation.gradeBook"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2" />
+        </div>
+        <div class="mb-2">
+          <label for="promedio" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-star-half-alt ml-2 me-2"></i> Promedio
+          </label>
+          <input type="number" id="promedio" [(ngModel)]="selectedEducation.gradeAverage"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2" />
+        </div>
+        <div class="mb-2">
+          <label for="cuadernoCompleto" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-book-open ml-2 me-2"></i> Cuaderno Completo
+          </label>
+          <select id="cuadernoCompleto" [(ngModel)]="selectedEducation.fullNotebook"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2">
+            <option>Completo</option>
+            <option>Incompleto</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label for="asistencia" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-user-check ml-2 me-2"></i> Asistencia
+          </label>
+          <select id="asistencia" [(ngModel)]="selectedEducation.assistance"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2">
+            <option>Regular</option>
+            <option>Buena</option>
+            <option>Mala</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label for="tutorias" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-user-tie ml-2 me-2"></i> Tutorías
+          </label>
+          <select id="tutorias" [(ngModel)]="selectedEducation.tutorials"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2">
+            <option>Si</option>
+            <option>No</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label for="fechaEditada" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-calendar-alt ml-2 me-2"></i> Fecha Editada
+          </label>
+          <input type="date" id="fechaEditada" [(ngModel)]="selectedEducation.entryDate"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2" />
+        </div>
+      </div>
+
+
+      <div class="flex justify-end mt-4">
+        <button (click)="cerrarModalEducacion()" class="bg-gray-500 text-white px-4 py-2 mr-2 rounded">Cancelar</button>
+        <button (click)="guardarEducacion()" class="bg-green-500 text-white px-4 py-2 rounded">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL DE EDICION DE HEALTH SIN GENERAR NUEVO ID -> DENTRO DE VISTA PREVIA -->
+  <div *ngIf="isEditingHealth" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+    <div class="bg-white p-6 rounded shadow-lg  w-1/2 max-h-[80vh]  overflow-y-auto">
+      <h2 class="text-lg font-bold mb-4">Editar Salud</h2>
+
+      <div class="grid grid-cols-2 gap-4 p-4 bg-gray-100 rounded shadow-sm">
+        <div class="mb-2">
+          <label for="vacunacion" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-syringe ml-2 me-2"></i> Vacunación
+          </label>
+          <select id="vacunacion" [(ngModel)]="selectedHealth.vaccine"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2">
+            <option>Esquema Completo</option>
+            <option>Incompleto</option>
+            <option>Sin información</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label for="vph" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-virus ml-2 me-2"></i> VPH
+          </label>
+          <select id="vph" [(ngModel)]="selectedHealth.vph"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2">
+            <option>Aplicada</option>
+            <option>No aplicada</option>
+            <option>Sin información</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label for="influenza" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-viruses ml-2 me-2"></i> Influenza
+          </label>
+          <select id="influenza" [(ngModel)]="selectedHealth.influenza"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2">
+            <option>Aplicada</option>
+            <option>No aplicada</option>
+            <option>Sin información</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label for="desparasitacion" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-pills ml-2 me-2"></i> Desparasitación
+          </label>
+          <select id="desparasitacion" [(ngModel)]="selectedHealth.deworming"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2">
+            <option>Aplicada</option>
+            <option>No aplicada</option>
+            <option>Sin información</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label for="hemoglobina" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-tint ml-2 me-2"></i> Hemoglobina
+          </label>
+          <select id="hemoglobina" [(ngModel)]="selectedHealth.hemoglobin"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2">
+            <option>Normal</option>
+            <option>Baja</option>
+            <option>Alta</option>
+            <option>Sin información</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label for="condicionSalud" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-heartbeat ml-2 me-2"></i> Condición de Salud
+          </label>
+          <input type="text" id="condicionSalud" [(ngModel)]="selectedHealth.condicionBeneficiary"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2" />
+        </div>
+        <div class="mb-2">
+          <label for="fechaEditada" class="form-label text-muted d-flex align-items-center mb-1">
+            <i class="fas fa-calendar-alt ml-2 me-2"></i> Fecha Editada
+          </label>
+          <input type="date" id="fechaEditada" [(ngModel)]="selectedHealth.applicationDate"
+            class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300 p-2 w-full mb-2" />
+        </div>
+      </div>
+
+      <div class="flex justify-end mt-4">
+        <button (click)="cerrarModalSalud()" class="bg-gray-500 text-white px-4 py-2 mr-2 rounded">Cancelar</button>
+        <button (click)="guardarSalud()" class="bg-green-500 text-white px-4 py-2 rounded">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>

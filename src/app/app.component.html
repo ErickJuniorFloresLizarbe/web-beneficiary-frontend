@@ -1,0 +1,9 @@
+<div class="flex h-screen w-screen bg-slate-100 text-black antialiased selection:bg-blue-600 selection:text-white">
+  <app-sidemenu class="relative" *ngIf="!hideSidebar"></app-sidemenu>
+  <div class="flex flex-col flex-grow overflow-y-auto">
+    <app-navbar></app-navbar>
+    <div class="px-2 mt-2 flex-grow">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,97 @@
+/* Estilos adicionales para el componente de configuración */
+
+/* Animación para los botones de envío */
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Mejoras para inputs en modo oscuro */
+input.dark:focus,
+select.dark:focus {
+    border-color: rgba(79, 70, 229, 0.5);
+}
+
+/* Transiciones suaves */
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+/* Estilos para pestañas */
+.tab-active {
+    color: #4f46e5;
+    border-bottom-color: #4f46e5;
+}
+
+/* Mejoras para dispositivos móviles */
+@media (max-width: 640px) {
+    .config-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .config-header-actions {
+        margin-top: 1rem;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+/* Estilos para el indicador de fortaleza de contraseña */
+.password-strength-meter {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 8px;
+    transition: width 0.3s ease;
+}
+
+.strength-weak {
+    background-color: #ef4444;
+    width: 33%;
+}
+
+.strength-medium {
+    background-color: #f59e0b;
+    width: 66%;
+}
+
+.strength-strong {
+    background-color: #10b981;
+    width: 100%;
+}
+
+/* Animación para mensajes de éxito */
+.success-message-enter {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.success-message-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+}
+
+.success-message-exit {
+    opacity: 1;
+}
+
+.success-message-exit-active {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 300ms, transform 300ms;
+}
