@@ -5,9 +5,9 @@ export const environment = {
     ms_person: 'https://vg-ms-person.onrender.com',
 
     //Team_02
-    ms_beneficiario: 'https://ms-beneficiary.onrender.com',
-    ms_beneficiario_education: 'https://ms-education.onrender.com',
-    ms_beneficiario_health: 'https://ms-health.onrender.com',
+    ms_beneficiario: 'https://ms-beneficiary-person.onrender.com',
+    ms_beneficiario_education: 'https://ms-beneficiary-education.onrender.com',
+    ms_beneficiario_health: 'https://ms-beneficiary-health.onrender.com',
 
     //Team_03
     ms_issue: 'https://ms-issue.onrender.com',
