@@ -1,8 +1,8 @@
 // service/beneficiarios.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, from } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Observable, forkJoin, from } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { BeneficiaryDTO, EducationDTO, HealthDTO } from '../interfaces/beneficiaryDTO';
 import { environment } from '../../environments/environments';
 import { AuthService } from '../auth/services/auth.service';
@@ -48,6 +48,36 @@ export class BeneficiaryService {
       switchMap(headers =>
         this.http.get<BeneficiaryDTO[]>(`${this.apiUrl}/filter?typeKinship=${typeKinship}&state=${state}`, { headers })
       )
+    );
+  }
+
+    // CALCULO PARA MOSTRAR EN DASHBOARD
+  getBeneficiariosStats(): Observable<any> {
+    return forkJoin([
+      this.getPersonsByTypeKinshipAndState('HIJO', 'A'), // Beneficiarios Activos
+      this.getPersonsByTypeKinshipAndState('HIJO', 'I'), // Beneficiarios Inactivos
+      this.getPersonsBySponsoredAndState('NO', 'A'), // No Apadrinados Activos
+      this.getPersonsBySponsoredAndState('NO', 'I'), // No Apadrinados Inactivos
+      this.getPersonsBySponsoredAndState('SI', 'A'), // Apadrinados Activos
+      this.getPersonsBySponsoredAndState('SI', 'I'), // Apadrinados Inactivos
+    ]).pipe(
+      map(([activos, inactivos, noApadrinadosActivos, noApadrinadosInactivos, apadrinadosActivos, apadrinadosInactivos]) => {
+        // Filtrar solo los HIJOS de los resultados obtenidos
+        const hijosActivos = activos.filter(person => person.typeKinship === 'HIJO');
+        const hijosInactivos = inactivos.filter(person => person.typeKinship === 'HIJO');
+        const hijosNoApadrinadosActivos = noApadrinadosActivos.filter(person => person.typeKinship === 'HIJO');
+        const hijosNoApadrinadosInactivos = noApadrinadosInactivos.filter(person => person.typeKinship === 'HIJO');
+        const hijosApadrinadosActivos = apadrinadosActivos.filter(person => person.typeKinship === 'HIJO');
+        const hijosApadrinadosInactivos = apadrinadosInactivos.filter(person => person.typeKinship === 'HIJO');
+
+        return {
+          totalBeneficiarios: hijosActivos.length + hijosInactivos.length,
+          beneficiariosActivos: hijosActivos.length,
+          beneficiariosInactivos: hijosInactivos.length,
+          totalNoApadrinados: hijosNoApadrinadosActivos.length + hijosNoApadrinadosInactivos.length,
+          totalApadrinados: hijosApadrinadosActivos.length + hijosApadrinadosInactivos.length,
+        };
+      })
     );
   }
 

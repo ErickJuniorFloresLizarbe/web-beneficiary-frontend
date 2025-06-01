@@ -9,32 +9,37 @@
     max-width: 150px;
   }
 
-  .icon-benef{
-    font-size:17px; /* dimensione grande e leggibile */
-    color: #646d7a; /* colore amichevole, verde */
+  .icon-benef {
+    font-size: 17px;
+    /* dimensione grande e leggibile */
+    color: #646d7a;
+    /* colore amichevole, verde */
   }
 
-  .icon-apadr{
-    font-size:17px; /* dimensione grande e leggibile */
-    color: #609ce9; /* colore amichevole, verde */
+  .icon-apadr {
+    font-size: 17px;
+    /* dimensione grande e leggibile */
+    color: #609ce9;
+    /* colore amichevole, verde */
   }
-  
-  .font-text{
+
+  .font-text {
     font-family: 'Roboto', sans-serif;
   }
-  
-
 </style>
 
 <div class="container mx-auto p-4">
 
   <!-- TITULO DEL APARTADO -->
-  <nav class="navbar navbar-light bg-white mb-4 rounded-lg shadow-md ">
-    <div class="container">
-      <span class="navbar-brand text-lg font-semibold text-gray-700 ml-2">Listado de los Beneficiarios</span>
-      <!-- <button class="btn btn-outline-secondary"> <i class="bi bi-box-arrow-in-right"></i> Registar</button> -->
-    </div>
-  </nav>
+  <div class="flex items-center justify-between bg-white mb-4 rounded-lg shadow-md px-4 py-3">
+    <span class="text-lg font-semibold text-gray-700">Listado de los Beneficiarios</span>
+    <!-- Botón opcional para registrar -->
+    <!--
+  <button class="flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
+    <i class="fas fa-plus mr-2"></i> Registrar
+  </button>
+  -->
+  </div>
 
   <app-form-edit [isModalVisible]="isModalVisible" [selectedEducation]="selectedEducation"
     (closeModalEvent)="closeModal()" (saveEducationEvent)="saveEducation($event)">
@@ -45,45 +50,120 @@
     (closeHealthModalEvent)="closeHealthModal()" (saveHealthEvent)="saveHealthChanges($event)">
   </app-form-edit>
 
+  <!-- Control Panel / Stats -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+
+    <!-- Todos los beneficiarios-->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border-l-4 border-teal-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Todos los Menores</p>
+          <p class="text-2xl font-bold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.totalBeneficiarios }}</p>
+        </div>
+        <div class="p-3 rounded-full bg-teal-100 dark:bg-teal-900">
+          <i class="fa-solid fa-users fa-lg text-teal-600 dark:text-teal-400"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Beneficiarios -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border-l-4 border-gray-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Beneficiarios</p>
+          <p class="text-2xl font-bold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.totalNoApadrinados }}</p>
+        </div>
+        <div class="p-3 rounded-full bg-gray-100 dark:bg-gray-900">
+          <i class="fa-solid fa-house-user fa-lg text-gray-600 dark:text-gray-400"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Apadrinados -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border-l-4 border-indigo-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Apadrinados</p>
+          <p class="text-2xl font-bold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.totalApadrinados }}</p>
+        </div>
+        <div class="p-3 rounded-full bg-indigo-100 dark:bg-indigo-900">
+          <i class="fa-solid fa-hand-holding-heart fa-lg text-indigo-600 dark:text-indigo-400"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Beneficiarios Activos -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border-l-4 border-amber-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Menores Activos</p>
+          <p class="text-2xl font-bold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.beneficiariosActivos }}
+          </p>
+        </div>
+        <div class="p-3 rounded-full bg-amber-100 dark:bg-amber-900">
+          <i class="fas fa-thumbs-up fa-lg text-amber-600 dark:text-amber-400"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Beneficiarios Inactivos -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border-l-4 border-pink-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Menores Inactivos</p>
+          <p class="text-2xl font-bold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.beneficiariosInactivos }}
+          </p>
+        </div>
+        <div class="p-3 rounded-full bg-pink-100 dark:bg-pink-900">
+          <i class="fas fa-times-circle fa-lg text-pink-600 dark:text-pink-400"></i>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
 
   <!-- LISTA LA TABLA DE BENEFICIARIOS Y APADRINADOS ( A - I) -->
   <div class="bg-white shadow-md rounded-lg p-4">
     <!-- Header con los switches de estado -->
-    <div class="flex justify-between items-center border-b pb-2 mb-4">
+    <div class="flex justify-between items-center border pb-4 mb-6 bg-white shadow-md rounded-lg p-4">
 
-      <input type="text" [(ngModel)]="searchTerm" (input)="filtrarBeneficiarios()" placeholder="Buscar..."
-        class="border p-1 rounded text-gray-700" />
+      <input type="text" [(ngModel)]="searchTerm" (input)="filtrarBeneficiarios()" placeholder="Filtro de Busqueda..."
+        class="border border-gray-300 shadow-md rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" />
 
-      <div class="flex space-x-4  py-2">
+      <div class="flex space-x-6 py-2">
         <!-- Estado Activo/Inactivo -->
         <div (click)="cambiarEstado()" class="flex items-center cursor-pointer">
-          <div class="w-10 h-6 bg-gray-400 rounded-full p-1 relative transition-all duration-300">
-            <div class="w-4 h-4 bg-white rounded-full absolute transition-all duration-300"
-              [ngClass]="estadoActual === 'I' ? 'translate-x-4 bg-blue-500' : 'translate-x-0 bg-gray-300'">
+          <div class="w-12 h-7 bg-gray-400 rounded-full p-1 relative transition-all duration-300">
+            <div class="w-5 h-5 bg-white rounded-full absolute transition-all duration-300"
+              [ngClass]="estadoActual === 'I' ? 'translate-x-5 bg-blue-500' : 'translate-x-0 bg-gray-300'">
             </div>
           </div>
-          <span class="ml-2 text-gray-700">{{ estadoActual === 'A' ? 'Activos' : 'Inactivos' }}</span>
+          <span class="ml-3 text-gray-800 font-semibold">{{ estadoActual === 'A' ? 'Activos' : 'Inactivos' }}</span>
         </div>
 
         <!-- Estado Apadrinamiento -->
         <div (click)="cambiarApadrinamiento()" class="flex items-center cursor-pointer">
-          <div class="w-10 h-6 bg-gray-400 rounded-full p-1 relative transition-all duration-300">
-            <div class="w-4 h-4 bg-white rounded-full absolute transition-all duration-300"
-              [ngClass]="estadoApadrinamiento === 'SI' ? 'translate-x-4' : 'translate-x-0'">
+          <div class="w-12 h-7 bg-gray-400 rounded-full p-1 relative transition-all duration-300">
+            <div class="w-5 h-5 bg-white rounded-full absolute transition-all duration-300"
+              [ngClass]="estadoApadrinamiento === 'SI' ? 'translate-x-5 bg-blue-500' : 'translate-x-0 bg-gray-300'">
             </div>
           </div>
-          <span class="ml-2 text-gray-700">{{ estadoApadrinamiento === 'NO' ? 'Beneficiarios' : 'Apadrinados' }}</span>
+          <span class="ml-3 text-gray-800 font-semibold">{{ estadoApadrinamiento === 'NO' ? 'Beneficiarios' :
+            'Apadrinados' }}</span>
         </div>
       </div>
 
     </div>
 
-    <div class="bg-white shadow-md rounded-lg p-4 ">
+
+    <div class="bg-white border shadow-md rounded-lg p-4 ">
       <div class="overflow-x-auto">
 
         <!-- LISTA LA TABLA DE BENEFICIARIOS Y APADRINADOS ( A - I) -->
         <!-- Encabezado -->
-        <div class="hidden sm:grid grid-cols-8 bg-gray-100 text-gray-700 font-semibold text-base font-text px-4 py-2 border border-gray-300 rounded-t-md mb-2">
+        <div
+          class="hidden sm:grid grid-cols-8 bg-gray-100 text-gray-700 font-semibold text-base font-text px-4 py-2 border border-gray-300 rounded-t-md mb-2">
           <div>Nombres</div>
           <div>Apellidos</div>
           <div class="text-center">Edad</div>
@@ -97,7 +177,7 @@
         <!-- Contenido tipo tarjetas -->
         <div class="space-y-2">
           <div *ngFor="let beneficiario of beneficiariosFiltrados"
-              class="grid grid-cols-1 sm:grid-cols-8 bg-white border border-gray-200 rounded-md shadow-sm px-4 py-3 text-base font-text items-center gap-y-2 sm:gap-0 ">
+            class="grid grid-cols-1 sm:grid-cols-8 bg-white border border-gray-200 rounded-md shadow-sm px-4 py-3 text-base font-text items-center gap-y-2 sm:gap-0 ">
 
             <div>{{ beneficiario.name }}</div>
             <div>{{ beneficiario.surname }}</div>
@@ -106,7 +186,8 @@
             <div class="text-center">{{ beneficiario.typeDocument }}</div>
             <div>{{beneficiario.documentNumber }}</div>
             <div class="text-center">
-              <i [ngClass]="beneficiario.sponsored === 'SI' ? 'fa-solid fa-hand-holding-heart icon-apadr' : 'fa-solid fa-house-user icon-benef'"></i>
+              <i
+                [ngClass]="beneficiario.sponsored === 'SI' ? 'fa-solid fa-hand-holding-heart icon-apadr' : 'fa-solid fa-house-user icon-benef'"></i>
             </div>
 
             <!-- Acciones -->
@@ -128,49 +209,52 @@
               </button>
 
               <div class="dropdown">
-                <button class="btn btn-sm btn-primary dropdown-toggle px-2 py-1 text-xs" type="button" data-bs-toggle="dropdown"
-                  aria-expanded="false">
+                <button class="btn btn-sm btn-primary dropdown-toggle px-2 py-1 text-xs" type="button"
+                  data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fas fa-edit"></i>
                 </button>
                 <ul class="dropdown-menu text-sm">
                   <li><a class="dropdown-item" (click)="editarBeneficiario(beneficiario)">
-                    <i class="fas fa-user-edit me-2"></i>Beneficiario</a></li>
+                      <i class="fas fa-user-edit me-2"></i>Beneficiario</a></li>
                   <li><a class="dropdown-item" (click)="openModal(beneficiario)">
-                    <i class="fas fa-graduation-cap me-2"></i>Educación</a></li>
+                      <i class="fas fa-graduation-cap me-2"></i>Educación</a></li>
                   <li><a class="dropdown-item" (click)="openHealthModal(beneficiario)">
-                    <i class="fas fa-briefcase-medical me-2"></i>Salud</a></li>
-                  
+                      <i class="fas fa-briefcase-medical me-2"></i>Salud</a></li>
+
                 </ul>
               </div>
             </div>
           </div>
         </div>
-        
+
 
         <div class="flex justify-between items-center mt-4 text-sm">
           <!-- Selector de cantidad -->
           <div>
             <label>Cantidad por página:</label>
-            <select [(ngModel)]="itemsPerPage" (change)="cambiarItemsPorPagina(itemsPerPage)" class="border px-3 py-1 rounded ml-4">
+            <select [(ngModel)]="itemsPerPage" (change)="cambiarItemsPorPagina(itemsPerPage)"
+              class="border px-3 py-1 rounded ml-4">
               <option [value]="10">10</option>
               <option [value]="15">15</option>
               <option [value]="20">20</option>
             </select>
           </div>
-        
+
           <!-- Controles de paginación -->
           <div class="space-x-2">
-            <button (click)="cambiarPagina(currentPage - 1)" [disabled]="currentPage === 1" class="px-3 py-1 bg-gray-200 rounded">
+            <button (click)="cambiarPagina(currentPage - 1)" [disabled]="currentPage === 1"
+              class="px-3 py-1 bg-gray-200 rounded">
               <i class="fas fa-chevron-left"></i>
             </button>
             <span>Página {{ currentPage }} de {{ totalPages }}</span>
-            <button (click)="cambiarPagina(currentPage + 1)" [disabled]="currentPage === totalPages" class="px-3 py-1 bg-gray-200 rounded">
+            <button (click)="cambiarPagina(currentPage + 1)" [disabled]="currentPage === totalPages"
+              class="px-3 py-1 bg-gray-200 rounded">
               <i class="fas fa-chevron-right"></i>
             </button>
           </div>
         </div>
 
-        
+
       </div>
     </div>
   </div>
@@ -178,7 +262,7 @@
   <!-- MODAL DE VISTA PREVIA -- MUESTRA DATOS PERSON, EDUCATION Y HEALTH -->
   <div *ngIf="showBeneficiarioDetails && selectedBeneficiario && !isEditing"
     class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-7xl h-5/6 overflow-hidden flex flex-col">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-6xl h-5/6 overflow-hidden flex flex-col">
       <h2 class="text-lg font-semibold text-gray-800 font-text mb-3">Detalles del Beneficiario</h2>
 
       <div class="overflow-y-auto flex-grow p-2 bg-gray-100">
@@ -240,7 +324,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let edu of selectedBeneficiario.education" class="hover:bg-gray-100 transition duration-300 font-text">
+              <tr *ngFor="let edu of selectedBeneficiario.education"
+                class="hover:bg-gray-100 transition duration-300 font-text">
                 <td class="border-b px-2 py-1">{{ edu.schollName }}</td>
                 <td class="border-b px-2 py-1">{{ edu.degreeStudy }}</td>
                 <td class="border-b px-2 py-1">{{ edu.gradeBook }}</td>
@@ -279,7 +364,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let health of selectedBeneficiario.health" class="hover:bg-gray-100 transition duration-300 font-text">
+              <tr *ngFor="let health of selectedBeneficiario.health"
+                class="hover:bg-gray-100 transition duration-300 font-text">
                 <td class="border-b px-2 py-1">{{ health.vaccine }}</td>
                 <td class="border-b px-2 py-1">{{ health.vph }}</td>
                 <td class="border-b px-2 py-1">{{ health.influenza }}</td>
@@ -287,7 +373,7 @@
                 <td class="border-b px-2 py-1">{{ health.hemoglobin }}</td>
                 <td class="border-b px-2 py-1">{{ health.condicionBeneficiary }}</td>
                 <td class="border-b px-2 py-1">{{ formatBirthdate(health.applicationDate) }}</td>
-                
+
                 <td class="border-b px-2 py-1 text-center">
                   <!-- Botón de editar -->
                   <button class="px-2 py-1 text-white bg-blue-400 hover:bg-blue-500 rounded transition duration-300"
@@ -362,7 +448,8 @@
             <label for="numeroDocumento" class="form-label text-muted d-flex align-items-center mb-1">
               <i class="fas fa-file-alt ml-2 me-2"></i> Número de Documento
             </label>
-            <input type="text" id="numeroDocumento" name="documentNumber" [(ngModel)]="selectedBeneficiario.documentNumber"
+            <input type="text" id="numeroDocumento" name="documentNumber"
+              [(ngModel)]="selectedBeneficiario.documentNumber"
               class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300" required>
           </div>
           <div class="mb-2">
@@ -376,7 +463,8 @@
             <label for="apadrinado" class="form-label text-muted d-flex align-items-center mb-1">
               <i class="fas fa-hand-holding-heart ml-2 me-2"></i> Apadrinado
             </label>
-            <select id="apadrinado" name="sponsored" [(ngModel)]="selectedBeneficiario.sponsored" class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300" required>
+            <select id="apadrinado" name="sponsored" [(ngModel)]="selectedBeneficiario.sponsored"
+              class="form-control border rounded focus:outline-none focus:ring-2 focus:ring-blue-300" required>
               <option value="SI">Sí</option>
               <option value="NO">No</option>
             </select>

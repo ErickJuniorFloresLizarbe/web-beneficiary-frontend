@@ -36,12 +36,39 @@ export class BeneficiariosComponent implements OnInit {
   itemsPerPage: number = 10;
   totalPages: number = 1;
 
+  
+  beneficiariosStats: any = {
+    totalBeneficiarios: 0,
+    totalNoApadrinados: 0,
+    totalApadrinados: 0,
+    beneficiariosActivos: 0,
+    beneficiariosInactivos: 0
+  };
+
+
   constructor(private BeneficiaryService: BeneficiaryService, private pdfService: PdfService) { }
 
+  
   ngOnInit(): void {
     this.cargarBeneficiarios();
     this.BeneficiaryService.GetEducation();
     this.BeneficiaryService.GetHealth();
+
+      this.cargarEstadisticasBeneficiarios();
+  }
+  
+  cargarEstadisticasBeneficiarios(): void {
+    // Llamar a la API inicialmente
+    this.BeneficiaryService.getBeneficiariosStats().subscribe(stats => {
+      this.beneficiariosStats = stats;
+    });
+
+    // Configurar un intervalo para recargar estadísticas cada 10 segundos
+    setInterval(() => {
+      this.BeneficiaryService.getBeneficiariosStats().subscribe(stats => {
+        this.beneficiariosStats = stats;
+      });
+    }, 5000); // 10000 milisegundos = 10 segundos
   }
 
   //ITEMS DE FILAS DE LA TABLA 10 15 20
