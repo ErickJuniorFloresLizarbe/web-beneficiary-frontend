@@ -112,15 +112,23 @@ export class BeneficiariosComponent implements OnInit {
     this.cargarBeneficiarios();
   }
 
-  //METODO PARA FORMATEAR FECHA
+  // METODO PARA FORMATEAR FECHA
   formatBirthdate(dateString: string): string {
-    const dateParts = dateString.split('-'); // suponiendo formato 'YYYY-MM-DD'
-    const year = parseInt(dateParts[0], 10);
-    const month = parseInt(dateParts[1], 10) - 1; // meses de 0 a 11
-    const day = parseInt(dateParts[2], 10);
-    const date = new Date(year, month, day); // crea en la zona local sin hora
-    const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
-    return date.toLocaleDateString('es-PE', options).replace(/\s/g, ' - ');
+      if (!dateString) {
+          return 'Fecha no válida'; // O cualquier otro valor predeterminado que desees
+      }
+
+      const dateParts = dateString.split('-'); // suponiendo formato 'YYYY-MM-DD'
+      if (dateParts.length !== 3) {
+          return 'Fecha no válida'; // Manejo de error si el formato es incorrecto
+      }
+
+      const year = parseInt(dateParts[0], 10);
+      const month = parseInt(dateParts[1], 10) - 1; // meses de 0 a 11
+      const day = parseInt(dateParts[2], 10);
+      const date = new Date(year, month, day); // crea en la zona local sin hora
+      const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+      return date.toLocaleDateString('es-PE', options).replace(/\s/g, ' - ');
   }
 
   //LISTA DE ESTADO ACTIVO Y INACTIVO
@@ -268,10 +276,17 @@ export class BeneficiariosComponent implements OnInit {
   guardarSalud(): void {
     if (this.selectedBeneficiario && this.selectedHealth) {
       const id = this.selectedBeneficiario.idPerson;
-      const payload = {
-        idPerson: id,
-        health: [this.selectedHealth]
-      };
+      const healthId = this.selectedHealth.idHealth; // Asegúrate de tener el idHealth existente
+
+        // Crea el payload sin un nuevo idHealth
+        const payload = {
+            idPerson: id,
+            health: [{
+                idHealth: healthId, // Incluye el idHealth existente
+                // Agrega aquí los demás datos que deseas actualizar
+                ...this.selectedHealth // Esto incluye otros atributos de selectedHealth
+            }]
+        };
 
       console.log('Payload enviado a la API:', payload);
 
@@ -302,11 +317,38 @@ export class BeneficiariosComponent implements OnInit {
     this.isModalVisible = true;
     this.showBeneficiarioDetails = false;
 
-    //CARGA EL ULTIMO ID DE EDUCATION
+    // CARGA LA EDUCACIÓN CON MAYOR idEducation
     this.BeneficiaryService.getPersonByIdWithDetails(beneficiario.idPerson).subscribe(data => {
-      this.selectedEducation = data.education[0] || {};
+      const educations = data.education || [];
+
+      if (educations.length > 0) {
+        // Ordenar de mayor a menor y tomar la primera (última educación)
+        const lastEducation = [...educations].sort((a, b) => b.idEducation - a.idEducation)[0];
+
+        // Crear copia sin idEducation (para que al guardar cree una nueva)
+        this.selectedEducation = {
+          ...lastEducation,
+          idEducation: 0,
+          entryDate: new Date().toISOString().split('T')[0], // Fecha actual en formato yyyy-MM-dd
+        };
+      } else {
+        // Si no hay educación previa, crear una nueva vacía
+        this.selectedEducation = {
+          idEducation: 0,
+          degreeStudy: '',
+          gradeBook: '',
+          gradeAverage: 0,
+          fullNotebook: '',
+          assistance: '',
+          schollName: '',
+          entryDate: new Date().toISOString().split('T')[0],
+          tutorials: '',
+          personId: beneficiario.idPerson,
+        };
+      }
     });
   }
+
 
   //CIERRA, REFRESCA Y MUESTRA EL MODAL DEL BENFICIARIO ACTUALIZADO EN EDUCATION
   closeModal(): void {
@@ -327,9 +369,17 @@ export class BeneficiariosComponent implements OnInit {
   saveEducation(updatedEducation: any): void {
     if (!this.selectedBeneficiario) return;
 
-    const updatedData = {
+    // Clonamos la educación y eliminamos idEducation
+    const { idEducation, ...educationWithoutId } = updatedEducation;
+
+    const educationToSave = {
+      ...educationWithoutId,
+      personId: this.selectedBeneficiario.idPerson
+    };
+
+    const updatedData: BeneficiaryDTO = {
       ...this.selectedBeneficiario,
-      education: [updatedEducation]
+      education: [educationToSave]
     };
 
     this.BeneficiaryService.updatePerson(this.selectedBeneficiario.idPerson, updatedData).subscribe(() => {
@@ -344,9 +394,32 @@ export class BeneficiariosComponent implements OnInit {
     this.isHealthModalVisible = true;
     this.showBeneficiarioDetails = false;
 
-    //CARGA EL ULTIMO ID DE SALUD
     this.BeneficiaryService.getPersonByIdWithDetails(beneficiario.idPerson).subscribe(data => {
-      this.selectedHealth = data.health[0] || {};
+      const healthRecords = data.health || [];
+
+      if (healthRecords.length > 0) {
+        // Obtener el último registro de salud por idHealth (si lo tienes, si no, usar otro criterio como personId)
+        const lastHealth = [...healthRecords].sort((a, b) => b.idHealth - a.idHealth)[0];
+
+        // Crear una copia sin ID para generar uno nuevo al guardar
+        this.selectedHealth = {
+          ...lastHealth,
+          idHealth: 0,
+          applicationDate: new Date().toISOString().split('T')[0], // Fecha actual
+        };
+      } else {
+        // Si no hay datos previos, crear un objeto nuevo vacío
+        this.selectedHealth = {
+          vaccine: '',
+          vph: '',
+          influenza: '',
+          deworming: '',
+          hemoglobin: '',
+          applicationDate: new Date().toISOString().split('T')[0],
+          condicionBeneficiary: '',
+          personId: beneficiario.idPerson
+        };
+      }
     });
   }
 
@@ -365,13 +438,23 @@ export class BeneficiariosComponent implements OnInit {
     }
   }
 
+    
   //GUARDA Y CIERRA EL BENEFICIARIO ACTULIZADO EN SALUD
   saveHealthChanges(updatedHealth: any): void {
     if (!this.selectedBeneficiario) return;
 
-    const updatedData = {
+    // Clonamos la educación y eliminamos idEducation
+    const { idHealth, ...healthWithoutId } = updatedHealth;
+
+    // Elimina cualquier campo innecesario si hace falta, como un idHealth
+    const healthToSave = {
+      ...healthWithoutId,
+      personId: this.selectedBeneficiario.idPerson
+    };
+
+    const updatedData: BeneficiaryDTO = {
       ...this.selectedBeneficiario,
-      health: [updatedHealth]
+      health: [healthToSave]
     };
 
     this.BeneficiaryService.updatePerson(this.selectedBeneficiario.idPerson, updatedData).subscribe(() => {
@@ -379,5 +462,7 @@ export class BeneficiariosComponent implements OnInit {
       this.cargarBeneficiarios();
     });
   }
+
+
 }
 

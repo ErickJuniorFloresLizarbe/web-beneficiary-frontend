@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div *ngIf="isModalVisible" id="infoModal"
+<div *ngIf="isModalVisible  && selectedEducation" id="infoModal"
   class="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh]  overflow-y-auto">
 
@@ -98,7 +98,7 @@
 
 
 <!-- Modal en form-edit.component.html -->
-<div *ngIf="isHealthModalVisible" id="healthModal"
+<div *ngIf="isHealthModalVisible && selectedHealth" id="healthModal"
   class="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
   <div class="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh]  overflow-y-auto">
 

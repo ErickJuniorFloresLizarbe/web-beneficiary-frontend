@@ -51,7 +51,7 @@ export class BeneficiaryService {
     );
   }
 
-    // CALCULO PARA MOSTRAR EN DASHBOARD
+  // CALCULO PARA MOSTRAR EN DASHBOARD
   getBeneficiariosStats(): Observable<any> {
     return forkJoin([
       this.getPersonsByTypeKinshipAndState('HIJO', 'A'), // Beneficiarios Activos

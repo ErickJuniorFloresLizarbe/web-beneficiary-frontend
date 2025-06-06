@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class FormEditComponent {
 
-  @Input() isModalVisible: boolean = false;
+ @Input() isModalVisible: boolean = false;
   @Input() isHealthModalVisible: boolean = false;
 
   @Input() selectedEducation: any = {};
@@ -20,8 +20,8 @@ export class FormEditComponent {
   @Output() closeModalEvent = new EventEmitter<void>();
   @Output() saveEducationEvent = new EventEmitter<any>();
 
-  @Output() closeHealthModalEvent = new EventEmitter<void>(); // CORREGIDO
-  @Output() saveHealthEvent = new EventEmitter<any>(); // CORREGIDO
+  @Output() closeHealthModalEvent = new EventEmitter<void>();
+  @Output() saveHealthEvent = new EventEmitter<any>();
 
   closeModal(): void {
     this.closeModalEvent.emit();
