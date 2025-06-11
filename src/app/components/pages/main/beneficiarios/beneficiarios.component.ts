@@ -36,6 +36,10 @@ export class BeneficiariosComponent implements OnInit {
   itemsPerPage: number = 10;
   totalPages: number = 1;
 
+  filtroActivo: boolean = false; 
+
+  mensajeBeneficiarios: string = 'Vista de los Beneficiarios';
+  mensajeBeneficiariosEstado: string = 'Activos';
   
   beneficiariosStats: any = {
     totalBeneficiarios: 0,
@@ -51,10 +55,7 @@ export class BeneficiariosComponent implements OnInit {
   
   ngOnInit(): void {
     this.cargarBeneficiarios();
-    this.BeneficiaryService.GetEducation();
-    this.BeneficiaryService.GetHealth();
-
-      this.cargarEstadisticasBeneficiarios();
+    this.cargarEstadisticasBeneficiarios();
   }
   
   cargarEstadisticasBeneficiarios(): void {
@@ -87,10 +88,18 @@ export class BeneficiariosComponent implements OnInit {
     this.filtrarBeneficiarios();
   }
   
-  //FILTRO DE BUSQUEDA
+  // FUNCION PARA PAGINAR RESULTADOS DEL FILTRO
+  private paginarResultados(resultados: any[], page: number): void {
+    this.totalPages = Math.ceil(resultados.length / this.itemsPerPage);
+    const start = (page - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    this.beneficiariosFiltrados = resultados.slice(start, end);
+  }
+
+  // FILTRO DE BENEFICIARIOS USANDO LA FUNCION DE PAGINAR RESULADO
   filtrarBeneficiarios(page: number = this.currentPage): void {
     let resultados = this.beneficiarios;
-  
+
     if (this.searchTerm) {
       const lowerCaseSearch = this.searchTerm.toLowerCase();
       resultados = resultados.filter(b =>
@@ -99,17 +108,47 @@ export class BeneficiariosComponent implements OnInit {
         b.documentNumber.toLowerCase().includes(lowerCaseSearch)
       );
     }
-  
-    this.totalPages = Math.ceil(resultados.length / this.itemsPerPage);
-    const start = (page - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    this.beneficiariosFiltrados = resultados.slice(start, end);
+
+    this.paginarResultados(resultados, page);
   }
 
-  //BOTON DE FILTRO APADRINADO O BENEFICIARIO
-  cambiarApadrinamiento(): void {
-    this.estadoApadrinamiento = this.estadoApadrinamiento === 'NO' ? 'SI' : 'NO';
-    this.cargarBeneficiarios();
+  // FILTRO DE BENEFICIARIOS JOVENES - USANDO LA FUNCION DE PAGINAR RESULADO
+  filtrarBeneficiariosJovenes(page: number = this.currentPage): void {
+    let resultados = this.beneficiarios;
+
+    // Si el filtro está activo, lo desactivamos y mostramos todos los resultados
+    if (this.filtroActivo) {
+      this.filtroActivo = false;
+      this.paginarResultados(this.beneficiarios, page);
+      return;
+    }
+
+    // Aplicamos el filtro
+    if (this.searchTerm) {
+      const lowerCaseSearch = this.searchTerm.toLowerCase();
+      resultados = resultados.filter(b =>
+        b.age.toString().toLowerCase().includes(lowerCaseSearch)
+      );
+    }
+
+    resultados = resultados.filter(b => b.age >= 18);
+
+    this.filtroActivo = true; // Activamos el estado del filtro
+    this.paginarResultados(resultados, page);
+  }
+
+  //BOTON DE PARA LISTAR APADRINADO
+  cambiarApadrinamientoSi(): void {
+      this.estadoApadrinamiento = 'SI';
+      this.mensajeBeneficiarios = 'Vista de los Apadrinados'; // Cambia el mensaje aquí
+      this.cargarBeneficiarios();
+  }
+
+  //BOTON DE PARA LISTAR BENEFICIARIO 
+  cambiarApadrinamientoNo(): void {
+      this.estadoApadrinamiento = 'NO';
+      this.mensajeBeneficiarios = 'Vista de los Beneficiarios'; // Cambia el mensaje aquí
+      this.cargarBeneficiarios();
   }
 
   // METODO PARA FORMATEAR FECHA
@@ -132,8 +171,16 @@ export class BeneficiariosComponent implements OnInit {
   }
 
   //LISTA DE ESTADO ACTIVO Y INACTIVO
-  cambiarEstado(): void {
-    this.estadoActual = this.estadoActual === 'A' ? 'I' : 'A';
+  cambiarEstadoActivo(): void {
+    this.estadoActual = 'A';
+    this.mensajeBeneficiariosEstado = 'Activos';
+    this.cargarBeneficiarios();
+  }
+
+  //LISTA DE ESTADO ACTIVO Y INACTIVO
+  cambiarEstadoInactivo(): void {
+    this.estadoActual = 'I';
+    this.mensajeBeneficiariosEstado = 'Inactivos';
     this.cargarBeneficiarios();
   }
 

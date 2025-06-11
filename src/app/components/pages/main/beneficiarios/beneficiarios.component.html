@@ -32,7 +32,7 @@
 
   <!-- TITULO DEL APARTADO -->
   <div class="flex items-center justify-between bg-white mb-4 rounded-lg shadow-md px-4 py-3">
-    <span class="text-lg font-semibold text-gray-700">Listado de los Beneficiarios</span>
+    <span class="text-lg font-semibold text-gray-700">{{ mensajeBeneficiarios}} - {{mensajeBeneficiariosEstado}}</span>
     <!-- Botón opcional para registrar -->
     <!--
   <button class="flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
@@ -51,14 +51,15 @@
   </app-form-edit>
 
   <!-- Control Panel / Stats -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
 
-    <!-- Todos los beneficiarios-->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border-l-4 border-teal-500">
+    <!-- Sección Superior -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 border-l-4 border-teal-500">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Todos los Menores</p>
-          <p class="text-2xl font-bold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.totalBeneficiarios }}</p>
+          <p class="text-xl font-semibold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.totalBeneficiarios }}
+          </p>
         </div>
         <div class="p-3 rounded-full bg-teal-100 dark:bg-teal-900">
           <i class="fa-solid fa-users fa-lg text-teal-600 dark:text-teal-400"></i>
@@ -67,11 +68,12 @@
     </div>
 
     <!-- Total Beneficiarios -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border-l-4 border-gray-500">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 border-l-4 border-gray-500">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Beneficiarios</p>
-          <p class="text-2xl font-bold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.totalNoApadrinados }}</p>
+          <p class="text-xl font-semibold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.totalNoApadrinados }}
+          </p>
         </div>
         <div class="p-3 rounded-full bg-gray-100 dark:bg-gray-900">
           <i class="fa-solid fa-house-user fa-lg text-gray-600 dark:text-gray-400"></i>
@@ -80,11 +82,12 @@
     </div>
 
     <!-- Total Apadrinados -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border-l-4 border-indigo-500">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 border-l-4 border-indigo-500">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Apadrinados</p>
-          <p class="text-2xl font-bold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.totalApadrinados }}</p>
+          <p class="text-xl font-semibold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.totalApadrinados }}
+          </p>
         </div>
         <div class="p-3 rounded-full bg-indigo-100 dark:bg-indigo-900">
           <i class="fa-solid fa-hand-holding-heart fa-lg text-indigo-600 dark:text-indigo-400"></i>
@@ -92,13 +95,27 @@
       </div>
     </div>
 
+    <!-- Sección Inferior -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 border-l-4 border-blue-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">¿Cuál es la cantidad de jóvenes?</p>
+          <p class="text-xl font-semibold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.totalApadrinados }}
+          </p>
+        </div>
+        <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900">
+          <i class="fas fa-user-friends fa-lg text-blue-600 dark:text-blue-400"></i>
+        </div>
+      </div>
+    </div>
+
     <!-- Beneficiarios Activos -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border-l-4 border-amber-500">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 border-l-4 border-amber-500">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Menores Activos</p>
-          <p class="text-2xl font-bold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.beneficiariosActivos }}
-          </p>
+          <p class="text-xl font-semibold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.beneficiariosActivos
+            }}</p>
         </div>
         <div class="p-3 rounded-full bg-amber-100 dark:bg-amber-900">
           <i class="fas fa-thumbs-up fa-lg text-amber-600 dark:text-amber-400"></i>
@@ -107,12 +124,12 @@
     </div>
 
     <!-- Beneficiarios Inactivos -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border-l-4 border-pink-500">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 border-l-4 border-pink-500">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Menores Inactivos</p>
-          <p class="text-2xl font-bold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.beneficiariosInactivos }}
-          </p>
+          <p class="text-xl font-semibold text-gray-800 dark:text-gray-400">{{ beneficiariosStats.beneficiariosInactivos
+            }}</p>
         </div>
         <div class="p-3 rounded-full bg-pink-100 dark:bg-pink-900">
           <i class="fas fa-times-circle fa-lg text-pink-600 dark:text-pink-400"></i>
@@ -123,37 +140,60 @@
   </div>
 
 
+
   <!-- LISTA LA TABLA DE BENEFICIARIOS Y APADRINADOS ( A - I) -->
   <div class="bg-white shadow-md rounded-lg p-4">
-    <!-- Header con los switches de estado -->
-    <div class="flex justify-between items-center border pb-4 mb-6 bg-white shadow-md rounded-lg p-4">
+    <!-- Header con los switches de estado - Versión responsive -->
+    <div
+      class="flex flex-col lg:flex-row justify-between items-stretch gap-4 border pb-4 mb-6 bg-white shadow-md rounded-lg p-4">
 
-      <input type="text" [(ngModel)]="searchTerm" (input)="filtrarBeneficiarios()" placeholder="Filtro de Busqueda..."
-        class="border border-gray-300 shadow-md rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" />
+      <!-- Fila 1: Input + botón Jóvenes -->
+      <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full lg:w-auto">
+        <input type="text" [(ngModel)]="searchTerm" (input)="filtrarBeneficiarios()" placeholder="Filtro de Búsqueda..."
+          class="flex-grow min-w-[150px] border border-gray-300 shadow-md rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" />
 
-      <div class="flex space-x-6 py-2">
-        <!-- Estado Activo/Inactivo -->
-        <div (click)="cambiarEstado()" class="flex items-center cursor-pointer">
-          <div class="w-12 h-7 bg-gray-400 rounded-full p-1 relative transition-all duration-300">
-            <div class="w-5 h-5 bg-white rounded-full absolute transition-all duration-300"
-              [ngClass]="estadoActual === 'I' ? 'translate-x-5 bg-blue-500' : 'translate-x-0 bg-gray-300'">
-            </div>
-          </div>
-          <span class="ml-3 text-gray-800 font-semibold">{{ estadoActual === 'A' ? 'Activos' : 'Inactivos' }}</span>
-        </div>
-
-        <!-- Estado Apadrinamiento -->
-        <div (click)="cambiarApadrinamiento()" class="flex items-center cursor-pointer">
-          <div class="w-12 h-7 bg-gray-400 rounded-full p-1 relative transition-all duration-300">
-            <div class="w-5 h-5 bg-white rounded-full absolute transition-all duration-300"
-              [ngClass]="estadoApadrinamiento === 'SI' ? 'translate-x-5 bg-blue-500' : 'translate-x-0 bg-gray-300'">
-            </div>
-          </div>
-          <span class="ml-3 text-gray-800 font-semibold">{{ estadoApadrinamiento === 'NO' ? 'Beneficiarios' :
-            'Apadrinados' }}</span>
-        </div>
+        <button class="btn btn-light border px-4 py-2 text-sm whitespace-nowrap" type="button"
+          (click)="filtrarBeneficiariosJovenes()">
+          <i class="fas fa-user-friends"></i> Jóvenes
+        </button>
       </div>
 
+      <!-- Fila 2: Dropdowns -->
+      <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full lg:w-auto">
+
+        <!-- Dropdown Cambiar Lista -->
+        <div class="dropdown w-full">
+          <button class="btn btn-light border dropdown-toggle px-4 py-2 text-sm w-full" type="button"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa-solid fa-users"></i> Cambiar Lista
+          </button>
+          <ul class="dropdown-menu text-sm w-full">
+            <li type="button"><a class="dropdown-item" (click)="cambiarApadrinamientoNo()">
+                <i class="fa-solid fa-house-user me-2"></i> Beneficiarios</a>
+            </li>
+            <li type="button"><a class="dropdown-item" (click)="cambiarApadrinamientoSi()">
+                <i class="fa-solid fa-hand-holding-heart me-2"></i> Apadrinados</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Dropdown Cambiar Estado -->
+        <div class="dropdown w-full">
+          <button class="btn btn-light border dropdown-toggle px-4 py-2 text-sm w-full" type="button"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-dot-circle"></i> Cambiar Estado
+          </button>
+          <ul class="dropdown-menu text-sm w-full">
+            <li type="button"><a class="dropdown-item" (click)="cambiarEstadoActivo()">
+                <i class="fas fa-toggle-on me-2"></i> Activos</a>
+            </li>
+            <li type="button"><a class="dropdown-item" (click)="cambiarEstadoInactivo()">
+                <i class="fas fa-toggle-off me-2"></i> Inactivos</a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
     </div>
 
 
@@ -162,52 +202,57 @@
 
         <!-- LISTA LA TABLA DE BENEFICIARIOS Y APADRINADOS ( A - I) -->
         <!-- Encabezado -->
+        <!-- Encabezado (visible en todos los dispositivos) -->
         <div
-          class="hidden sm:grid grid-cols-8 bg-gray-100 text-gray-700 font-semibold text-base font-text px-4 py-2 border border-gray-300 rounded-t-md mb-2">
+          class="grid grid-cols-8 bg-gray-100 text-gray-700 font-semibold text-sm px-4 py-2 border border-gray-300 rounded-t-md mb-2 w-full min-w-[900px]">
           <div>Nombres</div>
           <div>Apellidos</div>
           <div class="text-center">Edad</div>
-          <div>Nacimiento</div>
+          <div class="text-center">Nacimiento</div>
           <div class="text-center">Tipo Doc</div>
-          <div>Número Doc</div>
+          <div class="text-center">Número Doc</div>
           <div class="text-center">Patrocinado</div>
           <div class="text-center">Acciones</div>
         </div>
 
-        <!-- Contenido tipo tarjetas -->
-        <div class="space-y-2">
+        <!-- Contenido - Siempre en formato horizontal con scroll -->
+        <div class="space-y-2 w-full">
           <div *ngFor="let beneficiario of beneficiariosFiltrados"
-            class="grid grid-cols-1 sm:grid-cols-8 bg-white border border-gray-200 rounded-md shadow-sm px-4 py-3 text-base font-text items-center gap-y-2 sm:gap-0 ">
+            class="grid grid-cols-8 bg-white border border-gray-200 rounded-md shadow-sm px-4 py-3 text-base font-text items-center gap-0 w-full min-w-[900px]">
 
-            <div>{{ beneficiario.name }}</div>
-            <div>{{ beneficiario.surname }}</div>
+            <div class="truncate-text">{{ beneficiario.name }}</div>
+            <div class="truncate-text">{{ beneficiario.surname }}</div>
             <div class="text-center">{{ beneficiario.age }}</div>
-            <div>{{ formatBirthdate(beneficiario.birthdate) }}</div>
+            <div class="text-center truncate-text">{{ formatBirthdate(beneficiario.birthdate) }}</div>
             <div class="text-center">{{ beneficiario.typeDocument }}</div>
-            <div>{{beneficiario.documentNumber }}</div>
+            <div class="text-center">{{beneficiario.documentNumber }}</div>
             <div class="text-center">
               <i
                 [ngClass]="beneficiario.sponsored === 'SI' ? 'fa-solid fa-hand-holding-heart icon-apadr' : 'fa-solid fa-house-user icon-benef'"></i>
             </div>
 
             <!-- Acciones -->
-            <div class="flex justify-start sm:justify-center gap-2">
+            <div class="flex gap-1 justify-center">
+              <!-- boton para cambiar de estado -->
               <button (click)="toggleEstado(beneficiario)"
                 [ngClass]="beneficiario.state === 'A' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'"
                 class="text-white rounded px-2 py-1 text-xs">
                 <i [ngClass]="beneficiario.state === 'A' ? 'fas fa-trash' : 'fas fa-undo'"></i>
               </button>
 
+              <!-- boton para exportar -->
               <button class="text-white bg-gray-500 hover:bg-gray-600 rounded px-2 py-1 text-xs"
                 (click)="beneficiario?.idPerson ? descargarPdf(beneficiario.idPerson) : null">
                 <i class="fas fa-file-pdf"></i>
               </button>
 
+              <!-- boton para mostar todo los detalles  -->
               <button class="text-white bg-gray-500 hover:bg-gray-600 rounded px-2 py-1 text-xs"
                 (click)="verDetalles(beneficiario.idPerson)">
                 <i class="fas fa-eye"></i>
               </button>
 
+              <!-- boton para dropdown para editar Education - health  -->
               <div class="dropdown">
                 <button class="btn btn-sm btn-primary dropdown-toggle px-2 py-1 text-xs" type="button"
                   data-bs-toggle="dropdown" aria-expanded="false">
@@ -220,7 +265,6 @@
                       <i class="fas fa-graduation-cap me-2"></i>Educación</a></li>
                   <li><a class="dropdown-item" (click)="openHealthModal(beneficiario)">
                       <i class="fas fa-briefcase-medical me-2"></i>Salud</a></li>
-
                 </ul>
               </div>
             </div>
@@ -228,12 +272,12 @@
         </div>
 
 
-        <div class="flex justify-between items-center mt-4 text-sm">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center mt-4 text-sm space-y-4 md:space-y-0">
           <!-- Selector de cantidad -->
-          <div>
-            <label>Cantidad por página:</label>
+          <div class="flex flex-col md:flex-row md:items-center w-full md:w-auto text-center md:text-left">
+            <label class="mb-2 md:mb-0">Cantidad por página:</label>
             <select [(ngModel)]="itemsPerPage" (change)="cambiarItemsPorPagina(itemsPerPage)"
-              class="border px-3 py-1 rounded ml-4">
+              class="border px-3 py-1 rounded md:ml-4 mt-2 md:mt-0 w-full md:w-auto">
               <option [value]="10">10</option>
               <option [value]="15">15</option>
               <option [value]="20">20</option>
@@ -241,18 +285,19 @@
           </div>
 
           <!-- Controles de paginación -->
-          <div class="space-x-2">
+          <div class="flex justify-center md:justify-end items-center space-x-2 w-full md:w-auto">
             <button (click)="cambiarPagina(currentPage - 1)" [disabled]="currentPage === 1"
-              class="px-3 py-1 bg-gray-200 rounded">
+              class="px-3 py-1 bg-gray-200 rounded disabled:opacity-50">
               <i class="fas fa-chevron-left"></i>
             </button>
             <span>Página {{ currentPage }} de {{ totalPages }}</span>
             <button (click)="cambiarPagina(currentPage + 1)" [disabled]="currentPage === totalPages"
-              class="px-3 py-1 bg-gray-200 rounded">
+              class="px-3 py-1 bg-gray-200 rounded disabled:opacity-50">
               <i class="fas fa-chevron-right"></i>
             </button>
           </div>
         </div>
+
 
 
       </div>
@@ -262,18 +307,18 @@
   <!-- MODAL DE VISTA PREVIA -- MUESTRA DATOS PERSON, EDUCATION Y HEALTH -->
   <div *ngIf="showBeneficiarioDetails && selectedBeneficiario && !isEditing"
     class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-7xl h-5/6 overflow-hidden flex flex-col">
+    <div class="bg-white p-6 rounded-lg shadow-lg mr-4 ml-4 w-full max-w-7xl h-5/6 overflow-hidden flex flex-col">
       <h2 class="text-lg font-semibold text-gray-800 font-text mb-3">Detalles del Beneficiario</h2>
 
       <div class="overflow-y-auto flex-grow p-2 bg-gray-100">
 
-        <div class="w-full mx-auto bg-white border border-gray-200 rounded-lg shadow-md p-3 mb-3">
+        <div class="w-full mx-auto bg-white border border-gray-200 rounded-lg shadow-md p-3 mb-3 gap-0 min-w-[1200px]">
           <!-- Tabla Person -->
           <h3 class="text-lg font-semibold text-gray-800 mb-3 border-b-2 border-gray-300 pb-1">
             Datos Personales
           </h3>
 
-          <table class="w-full table-auto border-collapse">
+          <table class="w-full table-auto border-collapse ">
             <thead class="bg-gray-100">
               <tr>
                 <th class="border-b px-2 py-1 text-left font-semibold">Nombres</th>
@@ -304,7 +349,7 @@
           </table>
         </div>
 
-        <div class="w-full mx-auto bg-white border border-gray-200 rounded-lg shadow-md p-3 mb-3">
+        <div class="w-full mx-auto bg-white border border-gray-200 rounded-lg shadow-md p-3 mb-3 gap-0 min-w-[1200px]">
           <!-- Tabla Education -->
           <h3 class="text-lg font-semibold text-gray-800 mb-3 border-b-2 border-gray-300 pb-1">
             Datos de Educación
@@ -345,7 +390,7 @@
           </table>
         </div>
 
-        <div class="w-full mx-auto bg-white border border-gray-200 rounded-lg shadow-md p-3 mb-3">
+        <div class="w-full mx-auto bg-white border border-gray-200 rounded-lg shadow-md p-3 mb-3 gap-0 min-w-[1200px]">
           <!-- Tabla Health -->
           <h3 class="text-lg font-semibold text-gray-800 mb-3 border-b-2 border-gray-300 pb-1">
             Datos de Salud
@@ -398,11 +443,11 @@
   <!-- MODAL DE EDICION DE PERSON SIN GENERAR NUEVO ID -->
   <div *ngIf="selectedBeneficiario && isEditing"
     class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/1 max-h-[80vh] overflow-y-auto ">
       <h2 class="text-lg font-semibold mb-4">Editar Beneficiario</h2>
 
       <form (ngSubmit)="guardarCambios()">
-        <div class="grid grid-cols-2 gap-4 p-4 bg-gray-100 rounded shadow-sm">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg rounded shadow-sm">
           <!-- Cada campo con espacio y estilo uniforme -->
           <div class="mb-2">
             <label for="nombre" class="form-label text-muted d-flex align-items-center mb-1">
@@ -485,10 +530,10 @@
 
   <!-- MODAL DE EDICION DE EDUCATION SIN GENERAR NUEVO ID -> DENTRO DE VISTA PREVIA -->
   <div *ngIf="isEditingEducation" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-    <div class="bg-white p-6 rounded shadow-lg  w-1/2 max-h-[80vh] overflow-y-auto">
+    <div class="bg-white p-6 rounded shadow-lg  w-1/1 max-h-[80vh] overflow-y-auto">
       <h2 class="text-lg font-bold mb-4">Editar Educación</h2>
 
-      <div class="grid grid-cols-2 gap-4 p-4 bg-gray-100 rounded shadow-sm">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 bg-gray-100 rounded shadow-sm">
         <div class="mb-2">
           <label for="institucionEducativa" class="form-label text-muted d-flex align-items-center mb-1">
             <i class="fas fa-school ml-2 me-2"></i> Institución Educativa
@@ -568,10 +613,10 @@
 
   <!-- MODAL DE EDICION DE HEALTH SIN GENERAR NUEVO ID -> DENTRO DE VISTA PREVIA -->
   <div *ngIf="isEditingHealth" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-    <div class="bg-white p-6 rounded shadow-lg  w-1/2 max-h-[80vh]  overflow-y-auto">
+    <div class="bg-white p-6 rounded shadow-lg  w-1/1 max-h-[80vh]  overflow-y-auto">
       <h2 class="text-lg font-bold mb-4">Editar Salud</h2>
 
-      <div class="grid grid-cols-2 gap-4 p-4 bg-gray-100 rounded shadow-sm">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 bg-gray-100 rounded shadow-sm">
         <div class="mb-2">
           <label for="vacunacion" class="form-label text-muted d-flex align-items-center mb-1">
             <i class="fas fa-syringe ml-2 me-2"></i> Vacunación

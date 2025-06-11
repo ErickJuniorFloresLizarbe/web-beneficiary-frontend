@@ -1,7 +1,7 @@
 <!-- Modal -->
 <div *ngIf="isModalVisible  && selectedEducation" id="infoModal"
   class="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
-  <div class="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh]  overflow-y-auto">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-auto max-h-[80vh]  overflow-y-auto">
 
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold text-gray-800">Información del Estudiante</h2>
@@ -10,7 +10,7 @@
       </button>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 p-4 bg-gray-100 rounded shadow-sm">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 bg-gray-100 rounded shadow-sm">
       <div class="mb-2">
         <label for="schollName" class="form-label text-muted d-flex align-items-center mb-1">
           <i class="fas fa-school ml-2 me-2"></i> Institución:
@@ -100,7 +100,7 @@
 <!-- Modal en form-edit.component.html -->
 <div *ngIf="isHealthModalVisible && selectedHealth" id="healthModal"
   class="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
-  <div class="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh]  overflow-y-auto">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-auto max-h-[80vh]  overflow-y-auto">
 
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold text-gray-800">Información de Salud General</h2>
@@ -109,7 +109,7 @@
       </button>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 p-4 bg-gray-100 rounded shadow-sm">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 bg-gray-100 rounded shadow-sm">
       <div class="mb-2">
         <label class="form-label text-muted d-flex align-items-center mb-1">
           <i class="fas fa-syringe ml-2 me-2"></i> Vacuna:
