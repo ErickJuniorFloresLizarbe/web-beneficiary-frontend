@@ -119,9 +119,14 @@ export class BeneficiaryService {
       this.getPersonsBySponsoredAndState('SI', 'I'), // Apadrinados Inactivos
     ]).pipe(
       map(([activos, inactivos, noApadrinadosActivos, noApadrinadosInactivos, apadrinadosActivos, apadrinadosInactivos]) => {
-        // Filtrar solo los HIJOS de los resultados obtenidos
+        // Filtrar solo los hijos
         const hijosActivos = activos.filter(person => person.typeKinship === 'HIJO');
         const hijosInactivos = inactivos.filter(person => person.typeKinship === 'HIJO');
+        
+        // Filtrar hijos mayores o iguales a 18 años
+        const hijosActivosJovenes = hijosActivos.filter(person => person.age >= 18);
+        const hijosInactivosJovenes = hijosInactivos.filter(person => person.age >= 18);
+        
         const hijosNoApadrinadosActivos = noApadrinadosActivos.filter(person => person.typeKinship === 'HIJO');
         const hijosNoApadrinadosInactivos = noApadrinadosInactivos.filter(person => person.typeKinship === 'HIJO');
         const hijosApadrinadosActivos = apadrinadosActivos.filter(person => person.typeKinship === 'HIJO');
@@ -133,6 +138,7 @@ export class BeneficiaryService {
           beneficiariosInactivos: hijosInactivos.length,
           totalNoApadrinados: hijosNoApadrinadosActivos.length + hijosNoApadrinadosInactivos.length,
           totalApadrinados: hijosApadrinadosActivos.length + hijosApadrinadosInactivos.length,
+          totalBeneficiariosJovenes: hijosActivosJovenes.length + hijosInactivosJovenes.length,
         };
       })
     );

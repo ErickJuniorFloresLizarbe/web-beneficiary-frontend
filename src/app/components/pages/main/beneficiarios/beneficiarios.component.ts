@@ -41,40 +41,40 @@ export class BeneficiariosComponent implements OnInit {
 
   mensajeBeneficiarios: string = 'Vista de los Beneficiarios';
   mensajeBeneficiariosEstado: string = 'Activos';
-  
+
+  // PANEL DE DATA DE LOS HIJOS
   beneficiariosStats: any = {
     totalBeneficiarios: 0,
     totalNoApadrinados: 0,
     totalApadrinados: 0,
     beneficiariosActivos: 0,
-    beneficiariosInactivos: 0
+    beneficiariosInactivos: 0,
+    totalBeneficiariosJovenes: 0
   };
 
-  // validaciones de correcion de datos
+  //VALIDACION DE CORRECTION DE DATO
   errores: string[] = [];
   public errors: string[] = [];
   public errHealth: string[] = [];
 
   constructor(private BeneficiaryService: BeneficiaryService, private pdfService: PdfService) { }
 
-  
   ngOnInit(): void {
     this.cargarBeneficiarios();
     this.cargarEstadisticasBeneficiarios();
   }
   
+  // CARGA LA DATA DEL PANEL DE INFORMACION
   cargarEstadisticasBeneficiarios(): void {
-    // Llamar a la API inicialmente
     this.BeneficiaryService.getBeneficiariosStats().subscribe(stats => {
       this.beneficiariosStats = stats;
     });
 
-    // Configurar un intervalo para recargar estadísticas cada 10 segundos
     setInterval(() => {
       this.BeneficiaryService.getBeneficiariosStats().subscribe(stats => {
         this.beneficiariosStats = stats;
       });
-    }, 5000); // 10000 milisegundos = 10 segundos
+    }, 5000);
   }
 
   //ITEMS DE FILAS DE LA TABLA 10 15 20
@@ -248,7 +248,7 @@ export class BeneficiariosComponent implements OnInit {
         error: (err) => {
 
           Swal.fire({
-            title: "Error!",
+            title: "Importante",
             text: "Por favor, espera un momento...",
             icon: "warning"
           });
@@ -744,7 +744,6 @@ export class BeneficiariosComponent implements OnInit {
     }
   }
 
-    
   //GUARDA Y CIERRA EL BENEFICIARIO ACTULIZADO EN SALUD
   saveHealthChanges(updatedHealth: any): void {
     if (!this.selectedBeneficiario) return;
