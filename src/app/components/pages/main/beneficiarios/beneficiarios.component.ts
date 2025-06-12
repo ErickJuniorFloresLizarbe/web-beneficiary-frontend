@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FormEditComponent } from '../beneficiarios/form-edit/form-edit.component';
 import { PdfService } from '../../../../report/beneciaryPdf.service';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -49,6 +50,10 @@ export class BeneficiariosComponent implements OnInit {
     beneficiariosInactivos: 0
   };
 
+  // validaciones de correcion de datos
+  errores: string[] = [];
+  public errors: string[] = [];
+  public errHealth: string[] = [];
 
   constructor(private BeneficiaryService: BeneficiaryService, private pdfService: PdfService) { }
 
@@ -209,40 +214,82 @@ export class BeneficiariosComponent implements OnInit {
 
 
   //BOTON DE ELIMINAR Y RESTAURAR BENEFICIARIO Y APADRINADO
-  toggleEstado(beneficiario: BeneficiaryDTO): void {
+    toggleEstado(beneficiario: BeneficiaryDTO): void {
     if (beneficiario.state === 'A') {
-      this.BeneficiaryService.deletePerson(beneficiario.idPerson).subscribe(() => {
-        beneficiario.state = 'I';
-      });
+          this.BeneficiaryService.deletePerson(beneficiario.idPerson).subscribe(() => {
+            beneficiario.state = 'I';
+          });
+          Swal.fire({
+            title: "Eliminado!",
+            text: "La persona " + beneficiario.name + " fue desactivada",
+            icon: "success"
+          });
     } else {
-      this.BeneficiaryService.restorePerson(beneficiario.idPerson).subscribe(() => {
-        beneficiario.state = 'A';
-      });
+           this.BeneficiaryService.restorePerson(beneficiario.idPerson).subscribe(() => {
+            beneficiario.state = 'A';
+          });
+          Swal.fire({
+            title: "Restaurado!",
+            text: "La persona " + beneficiario.name + " fue reactivada",
+            icon: "success"
+          });
     }
   }
+
 
   //FUNCIÓN DE VISTA DE DETALLES DE BENEFICIARIO POR ID  
   verDetalles(id: number): void {
-    this.BeneficiaryService.getPersonByIdWithDetails(id).subscribe(data => {
-      this.selectedBeneficiario = data;
-      this.isEditing = false;
-    });
-  }
+    this.BeneficiaryService.getPersonByIdWithDetails(id).subscribe(
+      {
+        next: (data) => {
+          this.selectedBeneficiario = data;
+          this.isEditing = false;
+        },
+        error: (err) => {
 
+          Swal.fire({
+            title: "Error!",
+            text: "Por favor, espera un momento...",
+            icon: "warning"
+          });
+        },
+      }
+
+    );
+  }
+  
   //FUNCION PARA DESCARGAR EN PDF DE CADA USUARIO
   descargarPdf(beneficiarioId: number | null): void {
-    if (beneficiarioId !== null) {
-      this.BeneficiaryService.getPersonByIdWithDetails(beneficiarioId).subscribe(
-        (data) => {
-          this.pdfService.generateBeneficiarioPdf(data);
-        },
-        (error) => {
-          console.error('Error al obtener los detalles del beneficiario:', error);
+    Swal.fire({
+      title: "seguro?",
+      text: "desea generar pdf",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Si, guardar!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (beneficiarioId !== null) {
+          this.BeneficiaryService.getPersonByIdWithDetails(beneficiarioId).subscribe(
+            async (data) => {
+              await this.pdfService.generateBeneficiarioPdf(data);
+               Swal.fire({
+                title: "Actualizado!",
+                text: "Beneficiario actualizado correctamente",
+                icon: "success"
+              });
+            },
+            (error) => {
+              console.error('Error al obtener los detalles del beneficiario:', error);
+            }
+          );
+        } else {
+          console.error('No se ha seleccionado ningún beneficiario');
         }
-      );
-    } else {
-      console.error('No se ha seleccionado ningún beneficiario');
-    }
+      }
+    });
+
   }
 
   //ABRE EL MODAL PARA HACER LA ACTUALIZACION DE BENEFICIARIO Y APADRINADO
@@ -252,27 +299,114 @@ export class BeneficiariosComponent implements OnInit {
   }
 
   //GUARDAMOS LOS CAMBIOS DE LA ACTUALIZACION DE LOS BENEFICIARIO Y APADRINADO
-  guardarCambios(): void {
-    if (this.selectedBeneficiario) {
-      const id = this.selectedBeneficiario.idPerson;
-      this.BeneficiaryService.updatePersonData(id, this.selectedBeneficiario).subscribe({
-        next: () => {
-          alert('Beneficiario actualizado correctamente');
-          this.cargarBeneficiarios();
-          this.cerrarModal();
-        },
-        error: (error) => {
-          console.error('Error al actualizar beneficiario', error);
-          alert('Error al actualizar el beneficiario');
-        }
-      });
+  async guardarCambios(): Promise<void> {
+
+    const errores = await this.validacionPersona();
+
+    if (errores.length > 0) {
+      this.errores = errores;
+      return;
     }
+
+    this.errores=[];
+
+    Swal.fire({
+      title: "Esta seguro?",
+      text: "Desea actualizar los datos ",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      cancelButtonText: "cancelar",
+      confirmButtonText: "Si, actualizar!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        if (this.selectedBeneficiario) {
+          const id = this.selectedBeneficiario.idPerson;
+          this.BeneficiaryService.updatePersonData(id, this.selectedBeneficiario).subscribe({
+            next: async () => {
+              Swal.fire({
+                title: "Actualizado!",
+                text: "Beneficiario actualizado correctamente",
+                icon: "success"
+              });
+              await this.cargarBeneficiarios();
+              this.cerrarModal();
+            },
+            error: (error) => {
+              console.error('Error al actualizar beneficiario', error);
+              Swal.fire({
+                title: "Error!",
+                text: "Nose pudo actualzar los datos",
+                icon: "error"
+              });
+            }
+          });
+        }
+      }
+    });
+
+  }
+
+  // VALIACION AL FORMULARIO DE ACTUALIZACION BENEFICIARIO Y APADRINADO
+  validacionPersona(): string[] {
+    let errores: string[] = [];
+
+    if (this.selectedBeneficiario) {
+
+      if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(this.selectedBeneficiario.name || '')) {
+        errores.push('El nombre es invalido');
+      }
+
+      if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(this.selectedBeneficiario.surname || '')) {
+        errores.push('El apellido es invalido');
+      }
+
+      if (this.selectedBeneficiario.age == null || this.selectedBeneficiario.age < 0) {
+        errores.push('La edad es inválida');
+      }
+
+      const fechaNacimiento = new Date(this.selectedBeneficiario.birthdate);
+      const hoy = new Date();
+      if (fechaNacimiento > hoy) {
+        errores.push('La fecha de nacimiento no puede ser futura');
+      }
+
+      if (!this.selectedBeneficiario.typeDocument) {
+        errores.push('Seleccione un tipo de documento');
+      }
+
+      if (this.selectedBeneficiario.typeDocument === 'DNI') {
+        if (!/^\d{8}$/.test(this.selectedBeneficiario.documentNumber || '')) {
+          errores.push('El DNI debe tener 8 dígitos');
+        }
+      } else if (this.selectedBeneficiario.typeDocument === 'CNE') {
+        if (!/^\d{15}$/.test(this.selectedBeneficiario.documentNumber || '')) {
+          errores.push('El CNE debe tener 15 dígitos');
+        }
+      } else {
+        errores.push('Tipo de documento invalido');
+      }
+      if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(this.selectedBeneficiario.typeKinship || '')) {
+        errores.push('El parentesco es invalido');
+      }
+      if (!this.selectedBeneficiario.sponsored ||
+        (this.selectedBeneficiario.sponsored !== 'SI' && this.selectedBeneficiario.sponsored !== 'NO')) {
+        errores.push('Debe seleccionar si esta apadrinado');
+      }
+
+    } else {
+      errores.push('No hay datos para validar');
+    }
+
+    return errores;
   }
 
   //CIERRA EL MODAL DE LA ACTUALIZACION DE BENEFICIARIO Y APADRINADO
   cerrarModal(): void {
     this.selectedBeneficiario = null;
     this.isEditing = false;
+    this.errores= [];
   }
 
   //ABRE EL MODAL PARA HACER LA CORRECION DE EDUCATION
@@ -283,34 +417,108 @@ export class BeneficiariosComponent implements OnInit {
 
   //GUARDAMOS LOS CAMBIOS DE LA CORRECION DE EDUCATION
   guardarEducacion(): void {
-    if (this.selectedBeneficiario && this.selectedEducation) {
-      const id = this.selectedBeneficiario.idPerson;
-      const payload = {
-        idPerson: id,
-        education: [this.selectedEducation]
-      };
 
-      console.log('Payload enviado a la API:', payload);
+    this.errors = [];
 
-      this.BeneficiaryService.correctEducationAndHealth(id, payload).subscribe({
-        next: () => {
-          alert('Educación actualizada correctamente');
-          this.cargarBeneficiarios();
-          this.verDetalles(id);
-          this.cerrarModalEducacion();
-        },
-        error: (error) => {
-          console.error('Error al actualizar educación', error);
-          alert('Error al actualizar la educación');
-        }
-      });
+    const namePattern = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+    const gradePattern = /^[1-9](ro|do|to)$/;
+
+    if (!this.selectedEducation.schollName || !namePattern.test(this.selectedEducation.schollName)) {
+      this.errors.push("Institución inválida: solo texto permitido.");
     }
+
+    if (!this.selectedEducation.degreeStudy || !namePattern.test(this.selectedEducation.degreeStudy)) {
+      this.errors.push("Nivel de estudio inválido: solo texto permitido.");
+    }
+
+    if (!this.selectedEducation.gradeBook || !gradePattern.test(this.selectedEducation.gradeBook)) {
+      this.errors.push("Grado inválido: formato permitido '1ro', '2do', '5to', etc.");
+    }
+
+    if (
+      this.selectedEducation.gradeAverage === undefined ||
+      this.selectedEducation.gradeAverage === null ||
+      isNaN(this.selectedEducation.gradeAverage) ||
+      this.selectedEducation.gradeAverage < 0 ||
+      this.selectedEducation.gradeAverage > 20
+    ) {
+      this.errors.push("Promedio inválido: debe ser un número entre 0 y 20.");
+    }
+
+    if (!this.selectedEducation.fullNotebook) {
+      this.errors.push("Debe seleccionar una opción para Cuaderno Completo.");
+    }
+
+    if (!this.selectedEducation.assistance) {
+      this.errors.push("Debe seleccionar una opción para Asistencia.");
+    }
+
+    if (!this.selectedEducation.tutorials) {
+      this.errors.push("Debe seleccionar una opción para Tutoriales.");
+    }
+
+    if (!this.selectedEducation.entryDate) {
+      this.errors.push("Debe seleccionar una Fecha.");
+    }
+
+    if (this.errors.length > 0) {
+      return;
+    }
+
+
+    Swal.fire({
+      title: "Esta seguro?",
+      text: "Desea actualizar los datos educacion ",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      cancelButtonText: "cancelar",
+      confirmButtonText: "Si, actualizar!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        if (this.selectedBeneficiario && this.selectedEducation) {
+          const id = this.selectedBeneficiario.idPerson;
+          const payload = {
+            idPerson: id,
+            education: [this.selectedEducation]
+          };
+          console.log('Payload enviado a la API:', payload);
+          this.BeneficiaryService.correctEducationAndHealth(id, payload).subscribe({
+            next: () => {
+              Swal.fire({
+                title: "Exito!",
+                text: "datos educacion actualizado correctamente",
+                icon: "success"
+              });
+              this.cargarBeneficiarios();
+              this.verDetalles(id);
+              this.cerrarModalEducacion();
+            },
+            error: (error) => {
+
+              Swal.fire({
+                title: "Error!",
+                text: "No se actualizar los datos de educacion",
+                icon: "error"
+              });
+              console.error('Error al actualizar educación', error);
+              alert('Error al actualizar la educación');
+            }
+          });
+        }
+
+      }
+    });
+
+
   }
 
   //CIERRA EL MODAL DE LA CORRECION DE EDUCATION
   cerrarModalEducacion(): void {
     this.selectedEducation = null;
     this.isEditingEducation = false;
+    this.errors= [];
   }
 
   //ABRE EL MODAL PARA HACER CORRECION DE SALUD
@@ -321,41 +529,92 @@ export class BeneficiariosComponent implements OnInit {
 
   //GUARDAMOS LOS CAMBIOS DE LA CORRECION DE SALUD
   guardarSalud(): void {
-    if (this.selectedBeneficiario && this.selectedHealth) {
-      const id = this.selectedBeneficiario.idPerson;
-      const healthId = this.selectedHealth.idHealth; // Asegúrate de tener el idHealth existente
+    this.errHealth = [];
 
-        // Crea el payload sin un nuevo idHealth
-        const payload = {
+    if (!this.selectedHealth.vaccine) {
+      this.errHealth.push("Debe seleccionar una opción para Vacuna.");
+    }
+
+    if (!this.selectedHealth.vph) {
+      this.errHealth.push("Debe seleccionar una opción para VPH.");
+    }
+
+    if (!this.selectedHealth.influenza) {
+      this.errHealth.push("Debe seleccionar una opción para Influenza.");
+    }
+
+    if (!this.selectedHealth.deworming) {
+      this.errHealth.push("Debe seleccionar una opción para Desparasitación.");
+    }
+
+    if (!this.selectedHealth.hemoglobin) {
+      this.errHealth.push("Debe seleccionar una opción para Hemoglobina.");
+    }
+
+
+    if (this.errHealth.length > 0) {
+      return;
+    }
+
+    Swal.fire({
+      title: "Esta seguro?",
+      text: "Desea actualizar los datos salud ",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      cancelButtonText: "cancelar",
+      confirmButtonText: "Si, actualizar!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        if (this.selectedBeneficiario && this.selectedHealth) {
+          const id = this.selectedBeneficiario.idPerson;
+          const healthId = this.selectedHealth.idHealth; // Asegúrate de tener el idHealth existente
+          // Crea el payload sin un nuevo idHealth
+          const payload = {
             idPerson: id,
             health: [{
-                idHealth: healthId, // Incluye el idHealth existente
-                // Agrega aquí los demás datos que deseas actualizar
-                ...this.selectedHealth // Esto incluye otros atributos de selectedHealth
+              idHealth: healthId, // Incluye el idHealth existente
+              // Agrega aquí los demás datos que deseas actualizar
+              ...this.selectedHealth // Esto incluye otros atributos de selectedHealth
             }]
-        };
+          };
 
-      console.log('Payload enviado a la API:', payload);
+          console.log('Payload enviado a la API:', payload);
 
-      this.BeneficiaryService.correctEducationAndHealth(id, payload).subscribe({
-        next: () => {
-          alert('Salud actualizada correctamente');
-          this.cargarBeneficiarios();
-          this.verDetalles(id);
-          this.cerrarModalSalud();
-        },
-        error: (error) => {
-          console.error('Error al actualizar salud', error);
-          alert('Error al actualizar la salud');
+          this.BeneficiaryService.correctEducationAndHealth(id, payload).subscribe({
+            next: () => {
+              this.cargarBeneficiarios();
+              Swal.fire({
+                title: "Exito!",
+                text: "datos salud actualizado correctamente",
+                icon: "success"
+              });
+              this.verDetalles(id);
+              this.cerrarModalSalud();
+            },
+            error: (error) => {
+              console.error('Error al actualizar salud', error);
+
+              Swal.fire({
+                title: "Error!",
+                text: "No se actualizar los datos de salud",
+                icon: "error"
+              });
+            }
+          });
         }
-      });
-    }
+
+      }
+    });
+
   }
 
   //CIERRA EL MODAL DE LA CORRECION DE SALUD
   cerrarModalSalud(): void {
     this.selectedHealth = null;
     this.isEditingHealth = false;
+    this.errHealth = []
   }
 
   //ABRE MODAL PARA ACTUALIZA LA EDUCATION Y GENERA NUEVO ID
@@ -509,7 +768,6 @@ export class BeneficiariosComponent implements OnInit {
       this.cargarBeneficiarios();
     });
   }
-
 
 }
 

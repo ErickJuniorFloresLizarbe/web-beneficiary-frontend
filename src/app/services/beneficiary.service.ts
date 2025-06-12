@@ -36,15 +36,6 @@ export class BeneficiaryService {
     );
   }
 
-  // DEVUELVE A TODOS LOS BENEFICIARIOS 18 ACTIVOS - INACTIVOS 
-  getPersonsByTypeKinshipAndStateAge(typeKinship: string, state: string): Observable<BeneficiaryDTO[]> {
-    return this.withAuthHeaders().pipe(
-      switchMap(headers =>
-        this.http.get<BeneficiaryDTO[]>(`${this.apiUrl}/filter-age?typeKinship=${typeKinship}&state=${state}`, { headers })
-      )
-    );
-  }
-
   // DEVUELVE A LOS APADRINADOS ACTIVOS - INACTIVOS
   getPersonsBySponsoredAndState(sponsored: string, state: string): Observable<BeneficiaryDTO[]> {
     return this.withAuthHeaders().pipe(
