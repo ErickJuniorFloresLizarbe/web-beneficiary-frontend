@@ -214,28 +214,61 @@ export class BeneficiariosComponent implements OnInit {
 
 
   //BOTON DE ELIMINAR Y RESTAURAR BENEFICIARIO Y APADRINADO
-    toggleEstado(beneficiario: BeneficiaryDTO): void {
+  toggleEstado(beneficiario: BeneficiaryDTO): void {
     if (beneficiario.state === 'A') {
-          this.BeneficiaryService.deletePerson(beneficiario.idPerson).subscribe(() => {
-            beneficiario.state = 'I';
-          });
+         this.BeneficiaryService.deletePerson(beneficiario.idPerson).subscribe({
+      next: () => {
+        beneficiario.state = 'I';
+        Swal.fire({
+          title: "Eliminado!",
+          text: "La persona " + beneficiario.name + " fue desactivada",
+          icon: "success"
+        });
+      },
+      error: (error) => {
+        if (error.status === 403) {
           Swal.fire({
-            title: "Eliminado!",
-            text: "La persona " + beneficiario.name + " fue desactivada",
-            icon: "success"
+            title: "Error!",
+            text: "Permiso denegado. No tienes acceso para eliminar esta persona.",
+            icon: "error"
           });
+        } else {
+          Swal.fire({
+            title: "Error!",
+            text: "Ocurrió un error inesperado. Intenta nuevamente.",
+            icon: "error"
+          });
+        }
+      }
+    });
     } else {
-           this.BeneficiaryService.restorePerson(beneficiario.idPerson).subscribe(() => {
-            beneficiario.state = 'A';
-          });
+      this.BeneficiaryService.restorePerson(beneficiario.idPerson).subscribe( {
+      next: () => {
+        beneficiario.state = 'A';
+        Swal.fire({
+          title: "Restaurado!",
+          text: "La persona " + beneficiario.name + " fue restaurada",
+          icon: "success"
+        });
+      },
+      error: (error) => {
+        if (error.status === 403) {
           Swal.fire({
-            title: "Restaurado!",
-            text: "La persona " + beneficiario.name + " fue reactivada",
-            icon: "success"
+            title: "Error!",
+            text: "Permiso denegado. No tienes acceso para restaurar esta persona.",
+            icon: "error"
           });
+        } else {
+          Swal.fire({
+            title: "Error!",
+            text: "Ocurrió un error inesperado. Intenta nuevamente.",
+            icon: "error"
+          });
+        }
+      }
+      });
     }
   }
-
 
   //FUNCIÓN DE VISTA DE DETALLES DE BENEFICIARIO POR ID  
   verDetalles(id: number): void {

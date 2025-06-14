@@ -8,6 +8,9 @@ export const environment = {
     ms_beneficiario: 'https://ms-beneficiary-person.onrender.com',
     ms_beneficiario_education: 'https://ms-beneficiary-education.onrender.com',
     ms_beneficiario_health: 'https://ms-beneficiary-health.onrender.com',
+    //ms_beneficiario: 'http://localhost:8085',
+    //ms_beneficiario_education: 'http://localhost:8086',
+    //ms_beneficiario_health: 'http://localhost:8087',
 
     //Team_03
     ms_issue: 'https://ms-issue.onrender.com',
